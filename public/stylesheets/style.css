@@ -1,0 +1,25 @@
+html,body { height:100%; }
+body { padding-top:0px; }
+.btn { margin-bottom:20px; }
+
+#column_container {
+    display: flex;              /* establish flex container */
+    flex-direction: column;     /* stack flex items vertically */
+    justify-content: center;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 100%;
+}
+
+#row_container {
+    display: flex;              /* establish flex container */
+    flex-direction: row;     /* stack flex items vertically */
+    justify-content: center;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    margin: 5px;
+}
+
+.box {
+/*    width: 300px;*/
+    margin: 5px;
+    text-align: center;
+}

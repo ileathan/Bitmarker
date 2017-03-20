@@ -1,0 +1,15 @@
+var express = require('express');
+var router = express.Router();
+var mongoose = require('mongoose');
+var Users = require('../models/Users.js');
+
+//router.get('/bycookie', function(req, res, next) {
+//        console.log("worked!");
+//  Users.findOne({"login-cookie": req.cookies["login-cookie"]}, function (err, post) {
+//    if (err) return next(err);
+//    if (post) {
+//        console.log("worked");
+//        res.json(post)
+//    } else { console.log("WTF ERROR"); }
+//  });
+//});
