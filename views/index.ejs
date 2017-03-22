@@ -6,17 +6,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <!--    <script src="/javascripts/ui-bootstrap-2.5.0.min.js"></script> -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
-    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
-    <script src="/javascripts/script.js"></script>
-  </head>
+    <script src="//ajax.googleapis.com
   <body>
-
+  /ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+  <script src="/javascripts/script.js"></script>
+  </head>
  <div ng-controller="mainController" id="column_container">
 
   <div id="row_container">
-   <button class="btn btn-primary" ng-click="login($event)">Log In</button>
+   <button class="btn btn-primary" ng-click="login()">Log In</button>
    &nbsp;
    <button class="btn btn-success" ng-click="createAccount()">Create Account</button>
   </div>
@@ -26,11 +26,12 @@
   </div> {{ username_information }}
 
   <div ng-class="password_status">
-   <input type="password" ng-model="data.password" ng-change="validatePassword()" class="form-control" ng-keyup="$event.keyCode == 13 && login($event)" placeholder="Password">
+   <input type="password" ng-model="data.password" ng-change="validatePassword()" class="form-control"
+          ng-keyup="$event.keyCode == 13 && ( !account_create && login() || account_create && createAccount() )" placeholder="Password">
   </div> {{ password_information }}
 
-  <div ng-hide="!account_create" ng-class="password2_status">
-   <input type="password" ng-model="data.password2" class="form-control" ng-change="validatePassword2()" placeholder="Repeat Password">
+  <div ng-if="account_create" ng-class="password2_status">
+   <input type="password" ng-model="data.password2" class="form-control" ng-change="validatePassword2()" ng-keyup="$event.keyCode == 13 && createAccount()" placeholder="Repeat Password">
   </div> {{ password2_information }}
 
 

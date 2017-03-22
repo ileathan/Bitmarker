@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
+var Replies = require('../models/Replies.js');
 var Users = require('../models/Users.js');
 var Posts = require('../models/Posts.js');
 var multer = require('multer');
@@ -8,6 +9,13 @@ var multer = require('multer');
 /*  GET /api/posts listing. */
 router.get('/posts', function(req, res, next) {
   Posts.find(function (err, users) {
+    if (err) return next(err);
+    res.json(users);
+  });
+});
+
+router.get('/replies', function(req, res, next) {
+  Replies.find(function (err, users) {
     if (err) return next(err);
     res.json(users);
   });
@@ -26,6 +34,14 @@ router.get('/bycookie', function(req, res, next) {
 /* POST /users */
 router.post('/', function(req, res, next) {
   Posts.create(req.body, function (err, post) {
+    if (err) return next(err);
+    res.json(post);
+  });
+});
+
+/* POST /users */
+router.post('/reply', function(req, res, next) {
+  Replies.create(req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });

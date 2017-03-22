@@ -1,0 +1,45 @@
+<div ng-show="selected_style" class="Grid TweetForwardTimeline">
+    <div ng-show="curReply.replyto == reply.replyto || curReply.replyto == state_cookie" ng-repeat="curReply in replies | filter: search_replies" Class="Grid-cell">
+        <div ng-show="curReply.replyto == reply.replyto || curReply.replyto == state_cookie" class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
+            <div class="content">
+                <div class="AdaptiveMediaOuterContainer">
+                    <div class="AdaptiveMedia-container">
+                        <div class="AdaptiveMedia-singlePhoto">
+                            <div class="AdaptiveMedia-photoContainer js-adaptive-photo "data-image-url="" data-element-context="platform_photo_card">
+                                <img data-aria-label-part src="" alt="" style="width: 100%; top: -0px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stream-item-header">
+                    <a href="/CNN" data-user-id="759251">
+                        <img class="avatar js-action-profile-avatar" ng-src="/uploads/{{reply.username}}" alt="">
+                        <strong>{{ curReply.username }}</strong>
+                        <span class="username js-action-profile-name" data-aria-label-part>&nbsp;</span>
+                    </a>
+                    <small class="time">
+                        <span class="_timestamp">{{ curReply.date | amTimeAgo }}</span>
+                    </small>
+                    <div class="js-tweet-text-container">
+                        <p class="TweetTextSize  js-tweet-text tweet-text">{{ curReply.post }}</p>
+                    </div>
+                    <div class="stream-item-footer">
+                        <div class="ProfileTweet-actionList js-actions" role="group" aria-label="Tweet actions">
+                            <div class="ProfileTweet-action ProfileTweet-action--reply">
+                                <button class="ProfileTweet-actionButton">
+                                    <span class="Icon Icon--reply"></span>
+                                </button>
+                            </div>
+                            <div class="ProfileTweet-action ProfileTweet-action--favorite js-toggleState">
+                                <button class="ProfileTweet-actionButton">
+                                    <div class="HeartAnimation"></div>
+                                    <div class="IconTextContainer"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

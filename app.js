@@ -13,6 +13,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var Replies = require('./models/Replies.js');
 var Users = require('./models/Users.js');
 var index = require('./routes/index');
 var users = require('./routes/users');

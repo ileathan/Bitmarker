@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="myApp"> 
+<html ng-app="myApp">
 <head>
  <title><%= title %></title>
  <link rel='stylesheet' href='/stylesheets/style.css' />
@@ -11,204 +11,50 @@
  <script src="/javascripts/bitmark_script.js"></script>
  <link rel="stylesheet" href="https://abs.twimg.com/a/1489738820/css/t1/twitter_core.bundle.css">
  <link rel="stylesheet" href="https://abs.twimg.com/a/1489738820/css/t1/twitter_more_1.bundle.css">
- <link rel="stylesheet" href="https://abs.twimg.com/a/1489738820/css/t1/twitter_more_2.bundle.css">
+ <link rel="stylesheet" href="/stylesheets/twitter_more_2.bundle.css">
  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
  <!-- load angular-moment -->
  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/0.9.0/angular-moment.min.js"></script>
-</head>
-
+</head> <!-- dependencies -->
 <body ng-controller="mainController">
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
- <div class="container-fluid">
- <!-- Brand and toggle get grouped for better mobile display -->
-  <div class="navbar-header">
-   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-    <span class="sr-only">Toggle navigation</span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-   </button>
-   <a class="navbar-brand" href="#">Bitmark</a>
-  </div>
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-   <ul class="nav navbar-nav">
-    <li onClick="document.cookie='state=home'" ng-click="home_status=true; profile_status=false; wallet_status=false" ng-class="home_status?'active':''"><a href="#">Home <span class="sr-only">(current)</span></a></li>
-    <li onClick="document.cookie='state=wallet'" ng-click="home_status=false; profile_status=false; wallet_status=true" ng-class="wallet_status?'active':''"><a href="#">Wallet</a></li>
-    <li onClick="document.cookie='state=profile'" ng-click="profile_status=true; home_status=false; wallet_status=false" ng-class="profile_status?'active':''""><a href="#">Profile</a></li>
-   </ul> 
-   <div class="navbar-form navbar-right">
-    <button class="btn-warning" ng-click="logout()">Log Out</button>
-   </div> 
-   <div class="navbar-form navbar-right">
-    <input type="text" ng-model="search" class="form-control ng-pristine ng-untouched ng-valid ng-empty" placeholder="Search">
-   </div>
-  </div><!-- /.navbar-collapse -->
- </div><!-- /.container-fluid -->
-</nav>
+<ng-include src="'/templates/navbar.ejs'"></ng-include> <!-- navbar -->
 
 <div style="display: inline-block">
-<div style="margin-top:55px;" ng-show="profile_status"><br>
- <img style="display:block" ng-src="/uploads/{{data.username}}" width="400" height="400">
- <form style="display: inline-block" action="/uploads" method="post" enctype="multipart/form-data">
-  <label for="file">To change profile picture choose file:</label><br>
+ <div style="margin-top:55px;" ng-show="profile_status"><br>
+  <img style="display:block" ng-src="/uploads/{{data.username}}" width="400" height="400">
+  <form style="display: inline-block" action="/uploads" method="post" enctype="multipart/form-data">
+   <label for="file">To change profile picture choose file:</label><br>
    <input style="display: inline-block" type="file" name="upl" ng-model="file" id="file">
    <input class="btn btn-success" type="submit" name="submit" value="Submit">
- </form>
-</div>
-  </div>
-
-
-
-
-<div ng-show="home_status"  class="three-col logged-out Streams StreamsColor--orange">
-
-<div style="margin-top:55px; text-align: center;">
- <div ng-class="post_status" style="width:500px; margin:0 auto;">
-  <textarea ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submit_post($event);" ng-model="data.post" ng-model="data.post" ng-change="alert('1')" cols="50" rows="1" class="form-control" placeholder="What would you like to post {{data.username}}?"></textarea>
- </div> {{ post_information }}
- <br>
-</div>
-
-
-
-<div ng-repeat="post in posts | filter: search" ng-switch on="$index % 3" class="Grid TweetForwardTimeline">
-
-
- <div Class="Grid-cell" ng-switch-when="0">
-  <div class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
-   <div class="content">
-    <div class="AdaptiveMediaOuterContainer">
-     <div class="AdaptiveMedia-container">
-      <div class="AdaptiveMedia-singlePhoto">
-       <div class="AdaptiveMedia-photoContainer js-adaptive-photo "data-image-url="" data-element-context="platform_photo_card">
-        <img data-aria-label-part src="" alt="" style="width: 100%; top: -0px;">
-       </div>
-      </div>
-     </div>
-    </div>
-    <div class="stream-item-header">
-     <a href="/CNN" data-user-id="759251">
-      <img class="avatar js-action-profile-avatar" ng-src="/uploads/{{posts[posts.length-($index+1)].username}}" alt="">
-      <strong>{{ posts[posts.length-($index+1)].username }}</strong>
-      <span class="username js-action-profile-name" data-aria-label-part>&nbsp;</span>
-     </a> 
-     <small class="time">
-      <span class="_timestamp">{{ posts[posts.length-($index+1)].date | amTimeAgo }}</span>
-     </small>      
-     <div class="js-tweet-text-container">
-      <p class="TweetTextSize  js-tweet-text tweet-text">{{ posts[posts.length-($index+1)].post }}</p>
-     </div>
-     <div class="stream-item-footer">
-      <div class="ProfileTweet-actionList js-actions" role="group" aria-label="Tweet actions">
-       <div class="ProfileTweet-action ProfileTweet-action--reply">
-        <button class="ProfileTweet-actionButton">
-         <span class="Icon Icon--reply"></span>
-        </button>
-       </div>
-       <div class="ProfileTweet-action ProfileTweet-action--favorite js-toggleState">
-        <button class="ProfileTweet-actionButton">
-         <div class="HeartAnimation"></div>
-         <div class="IconTextContainer"></div>
-        </button>
-       </div>
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
+  </form>
  </div>
+</div> <!-- profile page -->
 
- <div Class="Grid-cell" ng-switch-when="0">
-  <div ng-show="posts[$index+1]" class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
-   <div class="content">
-    <div class="AdaptiveMediaOuterContainer">
-     <div class="AdaptiveMedia-container">
-      <div class="AdaptiveMedia-singlePhoto">
-       <div class="AdaptiveMedia-photoContainer js-adaptive-photo "data-image-url="" data-element-context="platform_photo_card">
-        <img data-aria-label-part src="" alt="" style="width: 100%; top: -0px;">
-       </div>
-      </div>
-     </div>
-    </div>
-    <div class="stream-item-header">
-     <a href="/CNN" data-user-id="759251">
-      <img class="avatar js-action-profile-avatar" ng-src="/uploads/{{posts[posts.length-($index+2)].username}}" alt="">
-      <strong>{{ posts[posts.length-($index+2)].username }}</strong>
-      <span class="username js-action-profile-name" data-aria-label-part>&nbsp;</span>
-     </a> 
-     <small class="time">
-      <span class="_timestamp">{{ posts[posts.length-($index+2)].date | amTimeAgo }}</span>
-     </small>      
-     <div class="js-tweet-text-container">
-      <p class="TweetTextSize  js-tweet-text tweet-text">{{ posts[posts.length-($index+2)].post }}</p>
-     </div>
-     <div class="stream-item-footer">
-      <div class="ProfileTweet-actionList js-actions" role="group" aria-label="Tweet actions">
-       <div class="ProfileTweet-action ProfileTweet-action--reply">
-        <button class="ProfileTweet-actionButton">
-         <span class="Icon Icon--reply"></span>
-        </button>
-       </div>
-       <div class="ProfileTweet-action ProfileTweet-action--favorite js-toggleState">
-        <button class="ProfileTweet-actionButton">
-         <div class="HeartAnimation"></div>
-         <div class="IconTextContainer"></div>
-        </button>
-       </div>
-      </div>
-     </div>
-    </div>
-   </div>
+<div ng-show="home_status"  class="three-col logged-out Streams StreamsColor--orange"> <!-- Start home page -->
+
+ <div style="margin-top:55px; text-align: center;">
+  <div ng-class="post_status" style="width:500px; margin:0 auto;">
+   <textarea ng-if="!selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submit_post($event);"
+             ng-model="data.post" ng-model="data.post" ng-change="alert('1')" cols="50" rows="1" class="form-control"
+             placeholder="What would you like to post {{data.username}}?">
+   </textarea>
+  </div><br />
+ </div> <!-- post textarea -->
+
+ <ng-include src="'/templates/posts.ejs'"></ng-include> <!-- posts -->
+
+ <div style="margin-top:15px; margin-bottom:25px; text-align: center;">
+  <div ng-class="post_status" style="width:500px; margin:0 auto;">
+   <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submitReply($event);"
+             ng-model="reply.post" rows="1" class="form-control" placeholder="What would you like to reply {{data.username}}?">
+
+   </textarea>
   </div>
- </div>
+ </div> <!-- reply textarea -->
 
- <div class="Grid-cell" ng-switch-when="0">
-  <div ng-show="posts[$index+2]" class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
-   <div class="content">
-    <div class="AdaptiveMediaOuterContainer">
-     <div class="AdaptiveMedia-container">
-      <div class="AdaptiveMedia-singlePhoto">
-       <div class="AdaptiveMedia-photoContainer js-adaptive-photo "data-image-url="" data-element-context="platform_photo_card">
-        <img data-aria-label-part src="" alt="" style="width: 100%; top: -0px;">
-       </div>
-      </div>
-     </div>
-    </div>
-    <div class="stream-item-header">
-     <a href="/CNN" data-user-id="759251">
-      <img class="avatar js-action-profile-avatar" ng-src="/uploads/{{posts[posts.length-($index+1)].username}}" alt="">
-      <strong>{{ posts[posts.length-($index+3)].username }}</strong>
-      <span class="username js-action-profile-name" data-aria-label-part>&nbsp;</span>
-     </a> 
-     <small class="time">
-      <span class="_timestamp">{{ posts[posts.length-($index+3)].date | amTimeAgo }}</span>
-     </small>      
-     <div class="js-tweet-text-container">
-      <p class="TweetTextSize  js-tweet-text tweet-text">{{ posts[posts.length-($index+3)].post }}</p>
-     </div>
-     <div class="stream-item-footer">
-      <div class="ProfileTweet-actionList js-actions" role="group" aria-label="Tweet actions">
-       <div class="ProfileTweet-action ProfileTweet-action--reply">
-        <button class="ProfileTweet-actionButton">
-         <span class="Icon Icon--reply"></span>
-        </button>
-       </div>
-       <div class="ProfileTweet-action ProfileTweet-action--favorite js-toggleState">
-        <button class="ProfileTweet-actionButton">
-         <div class="HeartAnimation"></div>
-         <div class="IconTextContainer"></div>
-        </button>
-       </div>
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
- </div>
-</div>
+ <ng-include src="'/templates/replies.ejs'"></ng-include> <!-- replies -->
 
-</div>
+</div> <!-- End home page -->
 </body>
 </html>

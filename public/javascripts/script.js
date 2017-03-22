@@ -42,7 +42,7 @@ angular.module('myApp', [])
     });
   }
 
-  $scope.login = function($event) {
+  $scope.login = function() {
     if ($scope.account_create == false) {
       $http.post("/users/login", {"username": $scope.data.username, "password": $scope.data.password}).then(function(res) {
         if (res.data == "ERROR") alert("You did not enter anything that matches our records, perhaps create an account first?");
