@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('todo-api:server');
+var debug = require('debug')('bitmarker:server');
 var http = require('http');
 
 /**

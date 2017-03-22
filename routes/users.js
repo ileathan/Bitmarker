@@ -42,7 +42,7 @@ router.post('/', function(req, res, next) {
   });
 });
 
-/* PUT /todos/:id */
+/* PUT /users/:id */
 router.put('/:id', function(req, res, next) {
   Users.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
     if (err) return next(err);
@@ -50,7 +50,7 @@ router.put('/:id', function(req, res, next) {
   });
 });
 
-/* DELETE /todos/:id */
+/* DELETE /users/:id */
 router.delete('/:id', function(req, res, next) {
   Users.findByIdAndRemove(req.params.id, req.body, function (err, post) {
     if (err) return next(err);
