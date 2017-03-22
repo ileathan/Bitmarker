@@ -1,6 +1,6 @@
-angular.module('myApp', ['angularMoment']) 
+angular.module('myApp', ['angularMoment'])
 
-.controller('mainController', function($scope, $http, $interval) {
+  .controller('mainController', function($scope, $http, $interval) {
 
   $scope.data = {};
   $scope.data.username = "";
@@ -10,7 +10,7 @@ angular.module('myApp', ['angularMoment'])
   if($scope.state_cookie == "profile") { $scope.profile_status = true }
   else if($scope.state_cookie == "home") { $scope.home_status = true }
   else if($scope.state_cookie == "wallet") { $scope.wallet_status = true }
-  else if($scope.state_cookie) { $scope.selected_style = { "max-width" : "900px", "width" : "900px" }; $scope.home_status = true }
+  else if($scope.state_cookie) { $scope.selected_style = {"max-width" : "900px", "width" : "900px" }; $scope.home_status = true }
   else { $scope.home_status = true }
 
   $http.get("/api/posts").then(function(res) {$scope.posts = res.data} );
@@ -18,20 +18,21 @@ angular.module('myApp', ['angularMoment'])
 
   $interval(function(){
     $http.get("/api/posts").then(function(res) {
-    if ($scope.posts) {
-      if ($scope.posts[$scope.posts.length-1].date != res.data[res.data.length-1].date) { $scope.posts = res.data }
-    } else { $scope.posts = res.data } 
+      if ($scope.posts) {
+       if ($scope.posts[$scope.posts.length-1].date != res.data[res.data.length-1].date) { $scope.posts = res.data }
+      } else { $scope.posts = res.data }
   })}, 1000);
 
   $interval(function(){
     $http.get("/api/replies").then(function(res) {
-    if ($scope.replies) {
-      if ($scope.replies[$scope.replies.length-1].date != res.data[res.data.length-1].date) { $scope.replies = res.data }
-    } else { $scope.replies = res.data } 
+      if ($scope.replies) {
+        // Check to see if replies are synced with the response's version
+        if ($scope.replies[$scope.replies.length-1].date != res.data[res.data.length-1].date) { $scope.replies = res.data }
+      } else { $scope.replies = res.data }
   })}, 1000);
 
   $http.get("/api/bycookie").then(function(res) {
-    $scope.data.username = res.data.username;
+    $scope.data = res.data;
   });
 
   $scope.selected = null;

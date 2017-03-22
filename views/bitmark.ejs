@@ -4,9 +4,9 @@
  <title><%= title %></title>
  <link rel='stylesheet' href='/stylesheets/style.css' />
  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+ <script src="/javascripts/angular.min.js"></script>
+ <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular-animate.js"></script>
+ <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular-sanitize.js"></script>
  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
  <script src="/javascripts/bitmark_script.js"></script>
  <link rel="stylesheet" href="https://abs.twimg.com/a/1489738820/css/t1/twitter_core.bundle.css">
@@ -20,20 +20,27 @@
 
 <ng-include src="'/templates/navbar.ejs'"></ng-include> <!-- navbar -->
 
-<div style="display: inline-block">
- <div style="margin-top:55px;" ng-show="profile_status"><br>
-  <img style="display:block" ng-src="/uploads/{{data.username}}" width="400" height="400">
-  <form style="display: inline-block" action="/uploads" method="post" enctype="multipart/form-data">
-   <label for="file">To change profile picture choose file:</label><br>
-   <input style="display: inline-block" type="file" name="upl" ng-model="file" id="file">
-   <input class="btn btn-success" type="submit" name="submit" value="Submit">
-  </form>
- </div>
+<div ng-show="wallet_status" style="display: inline-block; margin-top: 55px;">
+  Your wallet address is <code>{{ data.wallet }}</code>, and you have <code>{{ data.balance }}</code> marks.
+  <br />
+  To increase your balance send Bitmarks (BTM) to your wallet address. <code>1 BTM = 1000 Marks.</code>
+</div>
+
+
+<div ng-show="profile_status" style="display: inline-block">
+  <div style="margin-top:55px;"><br>
+    <img style="display:block" ng-src="/uploads/{{data.username}}" width="400" height="400">
+    <form style="display: inline-block" action="/uploads" method="post" enctype="multipart/form-data">
+      <label for="file">To change profile picture choose file:</label><br>
+      <input style="display: inline-block" type="file" name="upl" ng-model="file" id="file">
+      <input class="btn btn-success" type="submit" name="submit" value="Submit">
+    </form>
+  </div>
 </div> <!-- profile page -->
 
 <div ng-show="home_status"  class="three-col logged-out Streams StreamsColor--orange"> <!-- Start home page -->
 
- <div style="margin-top:55px; text-align: center;">
+<div style="margin-top:55px; text-align: center;">
   <div ng-class="post_status" style="width:500px; margin:0 auto;">
    <textarea ng-if="!selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submit_post($event);"
              ng-model="data.post" ng-model="data.post" ng-change="alert('1')" cols="50" rows="1" class="form-control"
@@ -41,10 +48,9 @@
    </textarea>
   </div><br />
  </div> <!-- post textarea -->
+<ng-include src="'/templates/posts.ejs'"></ng-include> <!-- posts -->
 
- <ng-include src="'/templates/posts.ejs'"></ng-include> <!-- posts -->
-
- <div style="margin-top:15px; margin-bottom:25px; text-align: center;">
+<div style="margin-top:15px; margin-bottom:25px; text-align: center;">
   <div ng-class="post_status" style="width:500px; margin:0 auto;">
    <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submitReply($event);"
              ng-model="reply.post" rows="1" class="form-control" placeholder="What would you like to reply {{data.username}}?">
@@ -53,7 +59,7 @@
   </div>
  </div> <!-- reply textarea -->
 
- <ng-include src="'/templates/replies.ejs'"></ng-include> <!-- replies -->
+<ng-include src="'/templates/replies.ejs'"></ng-include> <!-- replies -->
 
 </div> <!-- End home page -->
 </body>

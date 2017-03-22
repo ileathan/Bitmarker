@@ -5,6 +5,7 @@ var Users = require('../models/Users.js');
 
 /* GET /users listing. */
 router.get('/', function(req, res, next) {
+  //Users.deleteMany({}).then();
   Users.find(function (err, users) {
     if (err) return next(err);
     res.json(users);
@@ -36,10 +37,17 @@ router.post('/login', function(req, res, next) {
 
 /* POST /users */
 router.post('/', function(req, res, next) {
-  Users.create(req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
+  var exec = require('child_process').exec;
+  var cmd = 'bitmarkd getnewaddress';
+  exec(cmd, function(error, stdout, stderr) {
+    req.body.wallet = stdout.trim();
+    req.body.balance = 0;
+    Users.create(req.body, function (err, post) {
+      if (err) return next(err);
+      res.json(post);
+    });
   });
+
 });
 
 /* PUT /users/:id */

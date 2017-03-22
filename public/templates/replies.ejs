@@ -1,6 +1,7 @@
 <div ng-show="selected_style" class="Grid TweetForwardTimeline">
     <div ng-show="curReply.replyto == reply.replyto || curReply.replyto == state_cookie" ng-repeat="curReply in replies | filter: search_replies" Class="Grid-cell">
-        <div ng-show="curReply.replyto == reply.replyto || curReply.replyto == state_cookie" class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
+        <div ng-show="curReply.replyto == reply.replyto || curReply.replyto == state_cookie"
+             class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
             <div class="content">
                 <div class="AdaptiveMediaOuterContainer">
                     <div class="AdaptiveMedia-container">

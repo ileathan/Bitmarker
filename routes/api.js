@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
 var Replies = require('../models/Replies.js');
 var Users = require('../models/Users.js');
 var Posts = require('../models/Posts.js');
