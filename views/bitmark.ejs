@@ -9,8 +9,8 @@
  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular-sanitize.js"></script>
  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
  <script src="/javascripts/bitmark_script.js"></script>
- <link rel="stylesheet" href="https://abs.twimg.com/a/1489738820/css/t1/twitter_core.bundle.css">
- <link rel="stylesheet" href="https://abs.twimg.com/a/1489738820/css/t1/twitter_more_1.bundle.css">
+ <link rel="stylesheet" href="/stylesheets/twitter_core.bundle.css">
+ <link rel="stylesheet" href="/stylesheets/twitter_more_1.bundle.css">
  <link rel="stylesheet" href="/stylesheets/twitter_more_2.bundle.css">
  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
  <!-- load angular-moment -->
@@ -21,7 +21,7 @@
 <ng-include src="'/templates/navbar.ejs'"></ng-include> <!-- navbar -->
 
 <div ng-show="wallet_status" style="display: inline-block; margin-top: 55px;">
-  Your wallet address is <code>{{ data.wallet }}</code>, and you have <code>{{ data.balance }}</code> marks.
+  Your wallet address is <code>{{ wallet }}</code>, and you have <code>{{ balance }}</code> marks.
   <br />
   To increase your balance send Bitmarks (BTM) to your wallet address. <code>1 BTM = 1000 Marks.</code>
 </div>
@@ -42,17 +42,18 @@
 
 <div style="margin-top:55px; text-align: center;">
   <div ng-class="post_status" style="width:500px; margin:0 auto;">
-   <textarea ng-if="!selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submit_post($event);"
+   <textarea ng-if="!selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && submitPost($event);"
              ng-model="data.post" ng-model="data.post" ng-change="alert('1')" cols="50" rows="1" class="form-control"
              placeholder="What would you like to post {{data.username}}?">
    </textarea>
   </div><br />
  </div> <!-- post textarea -->
+
 <ng-include src="'/templates/posts.ejs'"></ng-include> <!-- posts -->
 
 <div style="margin-top:15px; margin-bottom:25px; text-align: center;">
   <div ng-class="post_status" style="width:500px; margin:0 auto;">
-   <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && submitReply($event);"
+   <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && submitReply($event);"
              ng-model="reply.post" rows="1" class="form-control" placeholder="What would you like to reply {{data.username}}?">
 
    </textarea>

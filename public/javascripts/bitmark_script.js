@@ -5,12 +5,20 @@ angular.module('myApp', ['angularMoment'])
   $scope.data = {};
   $scope.data.username = "";
   $scope.data.post = "";
+  $scope.wallet = "";
+  $scope.balance = "";
   // extracts the value of cookie['state'].
   $scope.state_cookie = document.cookie.substr(document.cookie.indexOf("state")+6, document.cookie.indexOf(";")-6);
   if($scope.state_cookie == "profile") { $scope.profile_status = true }
   else if($scope.state_cookie == "home") { $scope.home_status = true }
   else if($scope.state_cookie == "wallet") { $scope.wallet_status = true }
-  else if($scope.state_cookie) { $scope.selected_style = {"max-width" : "900px", "width" : "900px" }; $scope.home_status = true }
+  else if($scope.state_cookie) {
+    setTimeout(function(){
+      document.getElementById('workaround').style.width="900px";
+      document.getElementById('workaround').style.maxWidth="900px";
+    }, 1000);
+    $scope.selected_style = {"max-width" : "900px", "width" : "900px" }; $scope.home_status = true
+  }
   else { $scope.home_status = true }
 
   $http.get("/api/posts").then(function(res) {$scope.posts = res.data} );
@@ -18,26 +26,44 @@ angular.module('myApp', ['angularMoment'])
 
   $interval(function(){
     $http.get("/api/posts").then(function(res) {
-      if ($scope.posts) {
-       if ($scope.posts[$scope.posts.length-1].date != res.data[res.data.length-1].date) { $scope.posts = res.data }
-      } else { $scope.posts = res.data }
-  })}, 1000);
+      //if ($scope.posts) {
+      // if ($scope.posts[$scope.posts.length-1].date != res.data[res.data.length-1].date) { $scope.posts = res.data }
+      //} else { $scope.posts = res.data }
+      $scope.posts = res.data;
+  })}, 500);
 
   $interval(function(){
     $http.get("/api/replies").then(function(res) {
-      if ($scope.replies) {
-        // Check to see if replies are synced with the response's version
-        if ($scope.replies[$scope.replies.length-1].date != res.data[res.data.length-1].date) { $scope.replies = res.data }
-      } else { $scope.replies = res.data }
-  })}, 1000);
+      //if ($scope.replies) {
+      // Check to see if replies are synced with the response's version
+      //  if ($scope.replies[$scope.replies.length-1].date != res.data[res.data.length-1].date) { $scope.replies = res.data }
+      //} else { $scope.replies = res.data }
+      $scope.replies = res.data;
+  })}, 500);
 
   $http.get("/api/bycookie").then(function(res) {
-    $scope.data = res.data;
+    $scope.data.username = res.data.username;
+    $scope.wallet = res.data.wallet;
+    $scope.balance = res.data.balance;
   });
+
+  $scope.markPost = function (post) {
+    $http.get("/api/mark/" + post._id).then();
+  }
+
+  $scope.calculateBlueValue = function (marks) {
+    blueValue = 255;
+    if (marks > 17) blueValue = 255-((marks-17)*6);
+    if (blueValue < 100) blueValue = 100;
+    return blueValue;
+  }
+  $scope.calculateRedValue = function (marks) { redValue = 255-marks*5; if (redValue<65) redValue=65; return redValue }
 
   $scope.selected = null;
   $scope.reply = {};
   $scope.getSelected = function (post, $event) {
+    $scope.selected_post = post;
+//    alert($scope.selected_post);
     $scope.selected = post;
     $scope.selected_style = { "max-width" : "900px", "width" : "900px" };
     $scope.reply.replyto = post._id;
@@ -60,7 +86,7 @@ angular.module('myApp', ['angularMoment'])
     $scope.selected = null;
   };
 
-  $scope.submit_post = function ($event) {
+  $scope.submitPost = function ($event) {
     $http.post("/api/", $scope.data)
     .then(function(res) {
       $scope.data.post = ""
@@ -90,5 +116,27 @@ angular.module('myApp', ['angularMoment'])
         });
     }
   };
-});
+}).directive('sglclick', ['$parse', function($parse) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attr) {
+      var fn = $parse(attr['sglclick']);
+      var delay = 300, clicks = 0, timer = null;
+      element.on('click', function (event) {
+        clicks++;  //count clicks
+        if(clicks === 1) {
+          timer = setTimeout(function() {
+            scope.$apply(function () {
+              fn(scope, { $event: event });
+            });
+            clicks = 0;             //after action performed, reset counter
+          }, delay);
+        } else {
+          clearTimeout(timer);    //prevent single-click action
+          clicks = 0;             //after action performed, reset counter
+        }
+      });
+    }
+  };
+}]);
 

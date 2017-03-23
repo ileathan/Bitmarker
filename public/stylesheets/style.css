@@ -1,5 +1,14 @@
-html,body { height:100%; }
-body { padding-top:0px; }
+html { height: 100%; }
+
+body {
+    background-color: #f5f8fa;
+    height:100%;
+    font-size: 14px;
+    line-height: 18px;
+    padding-top:0px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 .btn { margin-bottom:20px; }
 
 #column_container {

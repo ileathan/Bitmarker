@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Users = require('../models/Users.js');
+var Posts = require('../models/Posts');
 
 /* GET /users listing. */
 router.get('/', function(req, res, next) {
-  //Users.deleteMany({}).then();
+  Posts.deleteOne( { _id : "58d2e17b4704efea1f873375" } ).then(console.log('------'));
   Users.find(function (err, users) {
     if (err) return next(err);
     res.json(users);
@@ -41,7 +42,7 @@ router.post('/', function(req, res, next) {
   var cmd = 'bitmarkd getnewaddress';
   exec(cmd, function(error, stdout, stderr) {
     req.body.wallet = stdout.trim();
-    req.body.balance = 0;
+    req.body.balance = 10;
     Users.create(req.body, function (err, post) {
       if (err) return next(err);
       res.json(post);
