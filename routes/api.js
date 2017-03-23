@@ -36,6 +36,30 @@ router.get('/mark/:id', function(req, res, next) {
   })
 });
 
+router.get('/markReply/:id', function(req, res, next) {
+  Replies.findOne({"_id": req.params.id}, function (err, marked_post) {
+    if (err) return next(err);
+    Users.findOne({"login-cookie": req.headers.cookie.split("login-cookie=")[1].split(';')[0] }, function (err, marking_user) {
+      if (!marking_user) return; // NOT LOGGED IN
+      if (marking_user.balance < 1) return; // NOT ENOUGH BALANCE
+      marked_post.marks++; marking_user.balance--;
+      Users.findByIdAndUpdate(marking_user._id, {"balance": marking_user.balance}, function (err, updated_markingUser) {
+        if (err) return next(err);
+        console.log("-1 to " + updated_markingUser.username + ".");
+      });
+      Users.findOneAndUpdate({ "username": marked_post.username }, { $inc: {"balance": 1} }, function (err, updated_markedUser) {
+        if (err) return next(err);
+        console.log("+1 to " + updated_markedUser.username + ".");
+      });
+
+      Replies.findOneAndUpdate({ "_id": req.params.id }, { $inc: { "marks": 1 } }, function (err, updated_markedPost) {
+        console.log("+1 to post " + updated_markedPost._id);
+      })
+    });
+    res.json(marked_post);
+  })
+});
+
 
 router.get('/replies', function(req, res, next) {
   Replies.find(function (err, users) {

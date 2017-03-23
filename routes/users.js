@@ -40,10 +40,14 @@ router.post('/login', function(req, res, next) {
 router.post('/', function(req, res, next) {
   var exec = require('child_process').exec;
   var cmd = 'bitmarkd getnewaddress';
+  var fs = require('fs');
+  var path = require('path');
+
   exec(cmd, function(error, stdout, stderr) {
     req.body.wallet = stdout.trim();
     req.body.balance = 10;
     Users.create(req.body, function (err, post) {
+      fs.createReadStream(path.join(__dirname, '../public/images/default-user-image.png')).pipe(fs.createWriteStream(path.join(__dirname, '../uploads/' + req.body.username)));
       if (err) return next(err);
       res.json(post);
     });

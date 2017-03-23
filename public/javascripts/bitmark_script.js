@@ -16,8 +16,8 @@ angular.module('myApp', ['angularMoment'])
     setTimeout(function(){
       document.getElementById('workaround').style.width="900px";
       document.getElementById('workaround').style.maxWidth="900px";
-    }, 1000);
-    $scope.selected_style = {"max-width" : "900px", "width" : "900px" }; $scope.home_status = true
+    }, 100);
+    $scope.selected_style = {"max-width" : "900px", "width" : "900px" }; $scope.home_status = true;
   }
   else { $scope.home_status = true }
 
@@ -49,15 +49,32 @@ angular.module('myApp', ['angularMoment'])
 
   $scope.markPost = function (post) {
     $http.get("/api/mark/" + post._id).then();
-  }
+  };
+  $scope.markReply = function (post) {
+    $http.get("/api/markReply/" + post._id).then();
+  };
 
-  $scope.calculateBlueValue = function (marks) {
+
+  $scope.calculateBlueValue = function (marks, position) {
     blueValue = 255;
-    if (marks > 17) blueValue = 255-((marks-17)*6);
+    if (position == 1) {
+      if (marks > 17) blueValue = 255-((marks-17)*6);
+    } else {
+      if (marks > 35) blueValue = 255-((marks-35)*6);
+    }
     if (blueValue < 100) blueValue = 100;
     return blueValue;
-  }
-  $scope.calculateRedValue = function (marks) { redValue = 255-marks*5; if (redValue<65) redValue=65; return redValue }
+  };
+  $scope.calculateRedValue = function (marks, position) {
+    redValue = 255;
+    if (position == 1) {
+      redValue = 255 - marks * 5;
+    } else {
+      if (marks > 35) redValue = 255-((marks-35)*5);
+    }
+    if (redValue<65) redValue=65;
+    return redValue;
+  };
 
   $scope.selected = null;
   $scope.reply = {};
@@ -140,3 +157,11 @@ angular.module('myApp', ['angularMoment'])
   };
 }]);
 
+//window.onload(function(){
+//  var state_cookie = document.cookie.substr(document.cookie.indexOf("state")+6, document.cookie.indexOf(";")-6);
+//  if (state_cookie != "home" && state_cookie != "profile" && state_cookie != "wallet" && state_cookie) {
+//   alert(JSON.stringify(document.getElementById('workaround')));
+//    document.getElementById('workaround').style.width="900px";
+//    document.getElementById('workaround').style.maxWidth="900px";
+//  }
+//});
