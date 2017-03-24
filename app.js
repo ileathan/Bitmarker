@@ -29,7 +29,6 @@ var storage = multer.diskStorage({
       if (err) return next(err);
       if (post) {
         cb(null, post.username);
-        console.log(post)
       } else { console.log("WTF ERROR!"); }
     });      
   }
@@ -80,5 +79,15 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+var https = require('https');
+var fs = require('fs');
+var options = {
+  key: fs.readFileSync('/etc/letsencrypt/live/leathan.xyz/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/leathan.xyz/fullchain.pem'),
+  ca: fs.readFileSync('/etc/letsencrypt/live/leathan.xyz/chain.pem')
+};
+
+https.createServer(options, app).listen(443, function(){console.log("listening on port 443.")});
+https.createServer(app).listen(80, '127.0.0.1');
 
 module.exports = app;
