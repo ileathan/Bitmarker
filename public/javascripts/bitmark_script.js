@@ -54,7 +54,6 @@ angular.module('myApp', ['angularMoment'])
     $http.get("/api/markReply/" + post._id).then();
   };
 
-
   $scope.calculateBlueValue = function (marks, position) {
     blueValue = 255;
     if (position == 1) {
