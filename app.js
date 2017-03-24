@@ -88,6 +88,15 @@ var options = {
 };
 
 https.createServer(options, app).listen(443, function(){console.log("listening on port 443.")});
+<<<<<<< HEAD
 https.createServer(app).listen(80, '127.0.0.1');
+=======
+//https.createServer(app).listen(80, function(){console.log("listening on port 80.")});
+var http = require('http');
+http.createServer(function (req, res) {
+  res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+  res.end();
+}).listen(80, function(){console.log("listening on port 80.")});
+>>>>>>> 761597ca7bb8d6ebb79cd378855c2a6f469f8f16
 
 module.exports = app;
