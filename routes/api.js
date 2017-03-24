@@ -95,11 +95,5 @@ router.post('/reply', function(req, res, next) {
   });
 });
 
-//router.post('/uploads', multer({ dest: '../uploads/' }).single(), function(req,res){
-//        console.log(req.body); //form fields
-//        console.log(req.file); //form files
-//        res.status(204).end();
-//});
-
 
 module.exports = router;
