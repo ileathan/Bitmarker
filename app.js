@@ -81,6 +81,7 @@ app.use(function(err, req, res, next) {
 
 var https = require('https');
 var fs = require('fs');
+var http = require('http');
 var options = {
   key: fs.readFileSync('/etc/letsencrypt/live/leathan.xyz/privkey.pem'),
   cert: fs.readFileSync('/etc/letsencrypt/live/leathan.xyz/fullchain.pem'),
@@ -88,21 +89,10 @@ var options = {
 };
 
 https.createServer(options, app).listen(443, function(){console.log("listening on port 443.")});
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-https.createServer(app).listen(80, '127.0.0.1');
-=======
->>>>>>> 3e59583cc5aeb070b341d377bc06283bc4f702b6
-//https.createServer(app).listen(80, function(){console.log("listening on port 80.")});
-var http = require('http');
 http.createServer(function (req, res) {
   res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
   res.end();
 }).listen(80, function(){console.log("listening on port 80.")});
-<<<<<<< HEAD
-=======
->>>>>>> 761597ca7bb8d6ebb79cd378855c2a6f469f8f16
->>>>>>> 3e59583cc5aeb070b341d377bc06283bc4f702b6
+
 
 module.exports = app;
