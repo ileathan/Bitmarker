@@ -2,6 +2,7 @@ angular.module('myApp', ['angularMoment'])
 
   .controller('mainController', function($scope, $http, $interval) {
 
+
   $scope.data = {};
   $scope.data.username = "";
   $scope.data.post = "";
@@ -52,6 +53,17 @@ angular.module('myApp', ['angularMoment'])
   };
   $scope.markReply = function (post) {
     $http.get("/api/markReply/" + post._id).then();
+  };
+
+  $scope.calculateGreenValue = function (marks, position) {
+    greenValue = 255;
+    if (position == 1) {
+      greenValue = 255-(marks*5);
+    } else {
+      if (marks > 35) greenValue = 255-((marks-35)*5);
+    }
+    if (greenValue < 0) greenValue = 0;
+    return greenValue;
   };
 
   $scope.calculateBlueValue = function (marks, position) {

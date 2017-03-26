@@ -1,13 +1,15 @@
 <div class="Grid TweetForwardTimeline">
   <div ng-style="selected_style"
-       sglclick="markPost(post)"
+       sglclick="getSelected(post, $event)"
        ng-dblclick="getSelected(post, $event)" ng-repeat="post in posts  | reverse | filter: search_posts track by $index"
        ng-if="!(selected_style && (post._id != state_cookie))" Class="Grid-cell">
-    <div style="background:
+    <!--<div style="background:
         radial-gradient(farthest-corner, rgb({{$parent.calculateRedValue(post.marks,1)}}, {{255-post.marks*22}}, {{$parent.calculateBlueValue(post.marks,1)}}),
         rgb({{$parent.calculateRedValue(post.marks, 2)}}, {{255-(post.marks-35)*22}}, {{$parent.calculateBlueValue(post.marks, 2)}})); display: inline-block"
         class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet has-cards has-content"
-        ng-style="selected_style" id="workaround">
+        ng-style="selected_style" id="workaround"> -->
+      <div ng-style="selected_style" style="display: inline-block;"
+        class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet has-cards has-content">
       <div class="content">
         <div class="AdaptiveMediaOuterContainer">
           <div class="AdaptiveMedia-container">
@@ -31,16 +33,10 @@
             <p class="TweetTextSize  js-tweet-text tweet-text">{{ post.post }}</p>
           </div>
           <div class="stream-item-footer">
-            <div class="ProfileTweet-actionList js-actions" role="group" aria-label="Tweet actions">
-              <div class="ProfileTweet-action ProfileTweet-action--reply">
-                <button class="ProfileTweet-actionButton">
-                  <span class="Icon Icon--reply"></span>
-                </button>
-              </div>
-              <div class="ProfileTweet-action ProfileTweet-action--favorite js-toggleState">
-                <button class="ProfileTweet-actionButton">
-                  <div class="HeartAnimation"></div>
-                  <div class="IconTextContainer"></div>
+            <div class="">
+              <div style="float:right" class="">
+                <button onclick="this.blur" ng-click="markPost(post); $event.stopPropagation()" type="button" class="btnMark" onmouseout="this.childNodes[1].style.transform = 'rotate(0deg)'" onmouseover="this.childNodes[1].style.transform = 'rotate(45deg)'">
+                  <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
                 </button>
               </div>
             </div>
