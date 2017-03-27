@@ -148,3 +148,26 @@ body {
     padding: 0px 1px 0px 3px;
 
 }
+
+#cont:before {
+    position: absolute;
+    content: '';
+    background-color:#800080;
+    border-radius:50%;
+    width: 15px;
+    height: 15px;
+    pointer-events: none;
+}
+
+.reputation {
+    color:red;
+    position:absolute;
+    left:52px;
+    top:8px;
+}
+.balance {
+    color:deeppink;
+    position:absolute;
+    left:52px;
+    top:28px;
+}

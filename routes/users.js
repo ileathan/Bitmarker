@@ -6,7 +6,6 @@ var Posts = require('../models/Posts');
 
 /* GET /users listing. */
 router.get('/', function(req, res, next) {
-  Posts.deleteOne( { _id : "58d2e17b4704efea1f873375" } ).then(console.log('------'));
   Users.find(function (err, users) {
     if (err) return next(err);
     res.json(users);
@@ -46,6 +45,7 @@ router.post('/', function(req, res, next) {
   exec(cmd, function(error, stdout, stderr) {
     req.body.wallet = stdout.trim();
     req.body.balance = 10;
+    req.body.reputation = 0;
     Users.create(req.body, function (err, post) {
       fs.createReadStream(path.join(__dirname, '../public/images/default-user-image.png')).pipe(fs.createWriteStream(path.join(__dirname, '../uploads/' + req.body.username)));
       if (err) return next(err);

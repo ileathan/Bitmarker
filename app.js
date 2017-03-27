@@ -19,7 +19,6 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var api   = require('./routes/api'); 
 var multer = require('multer');
-//var upload = multer ({ dest: "./uploads", rename: function(fieldname,filename) { return "test" } });
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/')
@@ -39,7 +38,7 @@ var app = express();
 
 app.post('/uploads', upload.single('upl'), function(req,res){
   console.log(req.file); //form files
-  res.render('bitmark', { title: "Upload sucess" });     
+  res.render('bitmark', { title: "Upload success" });
   res.status(204).end();
 });
 
@@ -49,7 +48,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -5,6 +5,7 @@ var UsersSchema = new mongoose.Schema({
   "password": String,
   "wallet": String,
   "balance": Number,
+  "reputation": Number,
   updated_at: { type: Date, default: Date.now },
 });
 module.exports = mongoose.model('Users', UsersSchema);

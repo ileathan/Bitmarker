@@ -49,7 +49,7 @@ angular.module('myApp', ['angularMoment'])
   });
 
   $scope.markPost = function (post) {
-    $http.get("/api/mark/" + post._id).then();
+    $scope.data.username == post.username || $http.get("/api/mark/" + post._id).then(function(){$scope.balance--});
   };
   $scope.markReply = function (post) {
     $http.get("/api/markReply/" + post._id).then();

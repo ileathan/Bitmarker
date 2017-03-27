@@ -1,15 +1,30 @@
 var express = require('express');
 var router = express.Router();
 var Replies = require('../models/Replies.js');
+var Markings = require('../models/Markings.js');
 var Users = require('../models/Users.js');
 var Posts = require('../models/Posts.js');
 var multer = require('multer');
 
 /*  GET /api/posts listing. */
 router.get('/posts', function(req, res, next) {
-  Posts.find(function (err, users) {
+  Posts.find(function (err, posts) {
     if (err) return next(err);
-    res.json(users);
+    res.json(posts);
+  });
+});
+
+router.get('/markings', function(req, res, next) {
+  Markings.find(function (err, markings) {
+    if (err) return next(err);
+    res.json(markings);
+  });
+});
+
+router.get('/markings/:username', function(req, res, next) {
+  Markings.find({"marked": req.params.username }, function (err, markings) {
+    if (err) return next(err);
+    res.json(markings);
   });
 });
 
@@ -31,6 +46,7 @@ router.get('/mark/:id', function(req, res, next) {
       Posts.findOneAndUpdate({ "_id": req.params.id }, { $inc: { "marks": 1 } }, function (err, updated_markedPost) {
         console.log("+1 to post " + updated_markedPost._id);
       })
+      Markings.create({"marked": marked_post.username, "marker": marking_user.username }, function (err, marking) { console.log(marking_user.username + "WTF") })
     });
     res.json(marked_post);
   })
@@ -51,10 +67,10 @@ router.get('/markReply/:id', function(req, res, next) {
         if (err) return next(err);
         console.log("+1 to " + updated_markedUser.username + ".");
       });
-
       Replies.findOneAndUpdate({ "_id": req.params.id }, { $inc: { "marks": 1 } }, function (err, updated_markedPost) {
         console.log("+1 to post " + updated_markedPost._id);
       })
+      Markings.create({"Marked": marked_post.username, "Marker": marking_user.username }, function (err, marking) { console.log(marking) })
     });
     res.json(marked_post);
   })
@@ -89,6 +105,7 @@ router.post('/', function(req, res, next) {
 
 /* POST /users */
 router.post('/reply', function(req, res, next) {
+  req.body.marks = 0;
   Replies.create(req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
