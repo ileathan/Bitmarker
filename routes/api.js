@@ -1,12 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var Replies = require('../models/Replies.js');
-var Markings = require('../models/Markings.js');
 var Users = require('../models/Users.js');
 var Posts = require('../models/Posts.js');
-var multer = require('multer');
 
-/*  GET /api/posts listing. */
 router.get('/posts', function(req, res, next) {
   Posts.find(function (err, posts) {
     if (err) return next(err);
@@ -14,103 +10,48 @@ router.get('/posts', function(req, res, next) {
   });
 });
 
-router.get('/markings', function(req, res, next) {
-  Markings.find(function (err, markings) {
-    if (err) return next(err);
-    res.json(markings);
-  });
+router.get('/replies', function(req, res, next) {
+  Posts.find({ "replyto": { $exists: true } }, function (err, replies) { res.json(replies) })
 });
+
+router.get('/markings', function(req, res, next) {
+  Posts.find({ "ismarking": { $exists: true } }, function (err, markings) { res.json(markings) })
+});
+
 
 router.get('/markings/:username', function(req, res, next) {
-  Markings.find({"marked": req.params.username }, function (err, markings) {
-    if (err) return next(err);
-    res.json(markings);
-  });
+  Post.find({ "ismarking": req.params.username }, function (err, markings) { res.json(markings) })
 });
 
-router.get('/mark/:id', function(req, res, next) {
-  Posts.findOne({"_id": req.params.id}, function (err, marked_post) {
-    if (err) return next(err);
+router.get('/info', function(req, res, next) {
+  Users.findOne({"login-cookie": req.cookies["login-cookie"]}, function (err, user) {
+    user.password = ""; user['login-cookie'] = "";// Don't return the sensitive information via ajax response
+    res.json(user)
+  })
+});
+
+router.post('/mark', function(req, res, next) {
+  Posts.findOne({"_id": req.body._id}, function (err, marked_post) {
     Users.findOne({"login-cookie": req.headers.cookie.split("login-cookie=")[1].split(';')[0] }, function (err, marking_user) {
       if (!marking_user) return; // NOT LOGGED IN
       if (marking_user.balance < 1) return; // NOT ENOUGH BALANCE
-      marked_post.marks++; marking_user.balance--;
-      Users.findByIdAndUpdate(marking_user._id, {"balance": marking_user.balance}, function (err, updated_markingUser) {
-        if (err) return next(err);
-        console.log("-1 to " + updated_markingUser.username + ".");
-      });
-      Users.findOneAndUpdate({ "username": marked_post.username }, { $inc: {"balance": 1} }, function (err, updated_markedUser) {
-        if (err) return next(err);
-        console.log("+1 to " + updated_markedUser.username + ".");
-      });
-      Posts.findOneAndUpdate({ "_id": req.params.id }, { $inc: { "marks": 1 } }, function (err, updated_markedPost) {
-        console.log("+1 to post " + updated_markedPost._id);
-      })
-      Markings.create({"marked": marked_post.username, "marker": marking_user.username }, function (err, marking) { console.log(marking_user.username + "WTF") })
-    });
-    res.json(marked_post);
+      Users.findByIdAndUpdate(marking_user._id,                    { $inc: { "balance": -1 } }, function () {});
+      Users.findOneAndUpdate({ "username": marked_post.username }, { $inc: { "balance":  1 } }, function () {});
+      Posts.findOneAndUpdate({ "_id": req.body._id },              { $inc: { "marks"  :  1 } }, function () {});
+      Posts.create({"replyto": marked_post._id, "username": marking_user.username, "ismarking": marked_post.username, "message": req.body.marking_msg, "marks": 0 },
+        function (err, marking) { res.json(marking) }
+      )
+    })
   })
 });
 
-router.get('/markReply/:id', function(req, res, next) {
-  Replies.findOne({"_id": req.params.id}, function (err, marked_post) {
-    if (err) return next(err);
-    Users.findOne({"login-cookie": req.headers.cookie.split("login-cookie=")[1].split(';')[0] }, function (err, marking_user) {
-      if (!marking_user) return; // NOT LOGGED IN
-      if (marking_user.balance < 1) return; // NOT ENOUGH BALANCE
-      marked_post.marks++; marking_user.balance--;
-      Users.findByIdAndUpdate(marking_user._id, {"balance": marking_user.balance}, function (err, updated_markingUser) {
-        if (err) return next(err);
-        console.log("-1 to " + updated_markingUser.username + ".");
-      });
-      Users.findOneAndUpdate({ "username": marked_post.username }, { $inc: {"balance": 1} }, function (err, updated_markedUser) {
-        if (err) return next(err);
-        console.log("+1 to " + updated_markedUser.username + ".");
-      });
-      Replies.findOneAndUpdate({ "_id": req.params.id }, { $inc: { "marks": 1 } }, function (err, updated_markedPost) {
-        console.log("+1 to post " + updated_markedPost._id);
-      })
-      Markings.create({"Marked": marked_post.username, "Marker": marking_user.username }, function (err, marking) { console.log(marking) })
-    });
-    res.json(marked_post);
+router.post('/create', function(req, res, next) {
+  Users.findOne({"login-cookie": req.headers.cookie.split("login-cookie=")[1].split(';')[0] }, function (err, creating_user) {
+    if (!creating_user) return; // NOT LOGGED IN
+    req.body.username = creating_user.username;
+    req.body.marks = 0;
+    Posts.create(req.body, function (err, post) { res.json(post) })
   })
 });
-
-
-router.get('/replies', function(req, res, next) {
-  Replies.find(function (err, users) {
-    if (err) return next(err);
-    res.json(users);
-  })
-});
-
-router.get('/bycookie', function(req, res, next) {
-  console.log(req.cookies["login-cookie"]);
-  Users.findOne({"login-cookie": req.cookies["login-cookie"]}, function (err, post) {
-    if (err) return next(err);
-    if (post) {
-        res.json(post)
-    } else { console.log("WTF ERROR"); }
-  })
-});
-
-/* POST /users */
-router.post('/', function(req, res, next) {
-  req.body.marks = 0;
-  Posts.create(req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
-  });
-});
-
-/* POST /users */
-router.post('/reply', function(req, res, next) {
-  req.body.marks = 0;
-  Replies.create(req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
-  });
-});
-
 
 module.exports = router;

@@ -29,7 +29,6 @@
   To increase your balance send Bitmarks (BTM) to your wallet address. <code>1 BTM = 1000 Marks.</code>
 </div>
 
-
 <div ng-if="profile_status" style="display: inline-block">
   <div style="margin-top:55px;"><br>
     <img style="display:block" ng-src="/uploads/{{data.username}}" width="400" height="400">
@@ -44,10 +43,18 @@
 <div ng-show="home_status"  class="three-col logged-out Streams StreamsColor--orange"> <!-- Start home page -->
 
 <div style="margin-top:55px; text-align: center;">
-  <div ng-class="post_status" style="width:500px; margin:0 auto;">
-   <textarea ng-if="!selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && submitPost($event);"
-             ng-model="data.post" ng-model="data.post" ng-change="alert('1')" cols="50" rows="1" class="form-control"
-             placeholder="What would you like to post {{data.username}}?">
+  <div style="width:900px; margin:0 auto;">
+  <img ng-if="!selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
+   <textarea ng-if="!selected_style" ng-click="$event.target.rows=4" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
+             ng-model="data.message" cols="50" rows="1" class="form-control" placeholder="What would you like to post {{data.username}}?" style="border: 1px solid #EEEEEE;
+    box-shadow: 1px 1px 0 #DDDDDD;
+    display: inline-block;
+    margin: 2% auto;
+    padding: 11px 20px 10px 70px;
+    resize: none;
+    border-radius: 50px;
+    width: 500px;
+    ">
    </textarea>
   </div><br />
  </div> <!-- post textarea -->
@@ -55,11 +62,20 @@
 <ng-include src="'/templates/posts.ejs'"></ng-include> <!-- posts -->
 
 <div style="margin-top:15px; margin-bottom:25px; text-align: center;">
-  <div ng-class="post_status" style="width:500px; margin:0 auto;">
-   <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=6" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && submitReply($event);"
-             ng-model="reply.post" rows="1" class="form-control" placeholder="What would you like to reply {{data.username}}?">
-
-   </textarea>
+  <div ng-class="post_status" style="width:900px; margin:0 auto;">
+    <img ng-if="selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
+    <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=4" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
+             ng-model="data.message" rows="1" class="form-control"
+             placeholder="What would you like to reply {{data.username}}?" style="border: 1px solid #EEEEEE;
+    box-shadow: 1px 1px 0 #DDDDDD;
+    display: inline-block;
+    margin: 2% auto;
+    padding: 11px 20px 10px 70px;
+    resize: none;
+    border-radius: 50px;
+    width: 500px;
+    ">
+    </textarea>
   </div>
  </div> <!-- reply textarea -->
 

@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
-
 // Use native node promises
 mongoose.Promise = global.Promise;
-
 mongoose.connect('mongodb://localhost/bitmark-api')
   .then(() => console.log('connection succesful'))
   .catch((err) => console.error(err));
@@ -13,7 +11,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var Replies = require('./models/Replies.js');
 var Users = require('./models/Users.js');
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -25,19 +22,14 @@ var storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     Users.findOne({"login-cookie": req.headers.cookie.split("login-cookie=")[1].split(';')[0] }, function (err, post) {
-      if (err) return next(err);
-      if (post) {
-        cb(null, post.username);
-      } else { console.log("WTF ERROR!"); }
-    });      
+      cb(null, post.username)
+    })
   }
 });
 var upload = multer({ storage: storage });
-
 var app = express();
 
 app.post('/uploads', upload.single('upl'), function(req,res){
-  console.log(req.file); //form files
   res.render('bitmark', { title: "Upload success" });
   res.status(204).end();
 });
@@ -62,7 +54,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error('Not Found Nigga');
   err.status = 404;
   next(err);
 });
