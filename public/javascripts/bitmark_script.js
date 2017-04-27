@@ -1,11 +1,10 @@
 angular.module('myApp', ['angularMoment']).controller('mainController', function($scope, $http, $interval, $timeout) {
 
   $scope.data = {};
+  
   $scope.post_glow = function (post) {
     return {  "box-shadow" : "0 0 " + post.marks / 2 + "px purple" };
   }
-
-
 
   $scope.post_style = function(objectList) {
     var obj = {};
