@@ -1,42 +1,36 @@
-<div class="Grid TweetForwardTimeline">
-    <div ng-click="!isDisabled && select(post, $event)"
-           ng-if="selected_style && post.message && post.replyto == state_cookie" ng-repeat="post in posts | filter: search_replies track by $index" Class="Grid-cell">
-      <div style="display: inline-block"
-             class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable  original-tweet js-original-tweet has-cards has-content">
-      <div class="content">
-        <div class="AdaptiveMediaOuterContainer">
-          <div class="AdaptiveMedia-container">
-            <div class="AdaptiveMedia-singlePhoto">
-              <div class="AdaptiveMedia-photoContainer js-adaptive-photo "data-image-url="" data-element-context="platform_photo_card">
-                <img data-aria-label-part ng-src="" alt="" style="width: 100%; top: -0px;">
-              </div>
-            </div>
-          </div>
+<div class="selected-gridcell">
+  <div ng-click="!isDisabled && select(post, $event)"
+       ng-if="selected_style && post.message && post.replyto == state_cookie" ng-repeat="post in posts | filter: search_replies track by $index" Class="gridcell">
+    <div style="display: inline-block" class="posting">
+      <img data-aria-label-part ng-src="" alt="" style="width: 100%; top: -0px;">
+      <div class="post-body">
+        <a href="/users/{{ post.username }}" data-user-id="759251">
+          <img class="avatar" ng-src="/uploads/{{post.username}}" alt="">
+          <strong>{{ post.username }}</strong>
+        </a>
+        <span class="spacer"></span>
+        <small class="time">
+          <span class="timestamp">{{ post.date | amTimeAgo }}</span>
+        </small>
+        <p class="post-paragraph">{{ post.message }}</p>
+        <div style="float:right">
+          <button ng-click="!isDisabled && ($parent.message_needed[post._id] = true) && $event.stopPropagation()" type="button" class="btnMark"
+                  onmouseout="this.childNodes[1].style.transform = 'rotate(0deg)'" onmouseover="this.childNodes[1].style.transform = 'rotate(45deg)'">
+            <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
+          </button>
         </div>
-        <div class="stream-item-header">
-          <a href="/users/{{ post.username }}" data-user-id="759251">
-            <img class="avatar js-action-profile-avatar" ng-src="/uploads/{{post.username}}" alt="">
-            <strong>{{ post.username }}</strong>
-          </a>
-          <span class="username js-action-profile-name" data-aria-label-part>&nbsp;</span>
-          <small class="time">
-            <span class="_timestamp">{{ post.date | amTimeAgo }}</span>
-          </small>
-          <div class="js-tweet-text-container">
-            <p class="TweetTextSize  js-tweet-text tweet-text">{{ post.message }}</p>
-          </div>
-          <div class="stream-item-footer">
-            <div style="float:right" class="">
-              <button ng-click="!isDisabled && (message_needed = true) && $event.stopPropagation()" type="button" class="btnMark"
-                      onmouseout="this.childNodes[1].style.transform = 'rotate(0deg)'" onmouseover="this.childNodes[1].style.transform = 'rotate(45deg)'">
-                <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
-              </button>
-            </div>
-            <textarea style="float: right; resize: none" ng-model="$parent.$parent.$parent.$parent.marking_msg" ng-if="message_needed" auto-focus
-                      ng-blur="$parent.message_needed=false; disableClicks(); mark(post)"
-                      ng-keyup="$event.keyCode == 13 && !$event.shiftKey && !($parent.message_needed=false) && mark(post)" placeholder="Reason? (This may be left blank)">
-            </textarea>
-          </div>
+        <textarea class="reason-textarea" ng-model="$parent.$parent.$parent.$parent.$parent.marking_msg" ng-if="message_needed[post._id]" auto-focus
+                  ng-blur="$parent.message_needed[post._id]=false; disableClicks(); mark(post)"
+                  ng-keyup="$event.keyCode == 13 && !$event.shiftKey && !($parent.message_needed[post._id]=false) && mark(post)" placeholder="Reason? (This may be left blank)">
+          </textarea>
+        <div style="clear:both; position:relative; margin-right: 38px">
+
+          <button style="btn-cancel-marking" ng-if="message_needed[post._id]"
+                  ng-click="$paernt.$parent.$parent.$parent.message_needed[post._id] = false; $parent.$parent.$parent.$parent.marking_msg = '';
+                  $paernt.$parent.$parent$parent.cancel = true; $event.stopPropagation()">
+            Cancel
+          </button>
+
         </div>
       </div>
     </div>

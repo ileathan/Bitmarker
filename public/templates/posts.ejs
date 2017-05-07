@@ -1,46 +1,44 @@
-<div class="Grid TweetForwardTimeline">
+<div style="height:200px; width:100%">
+
+<!--  <div ng-class="selected_style ? 'selected-gridcell fixed-container' : 'selected-gridcell'" >-->
+  <div class="selected-gridcell" >
   <div ng-style="selected_style"
        ng-click="!isDisabled && select(post, $event)" ng-repeat="post in posts  | reverse | filter: search_posts track by $index"
-       ng-if="post.message && !(selected_style && (post._id != state_cookie)) && (!post.replyto || selected_style)" Class="Grid-cell">
-      <div ng-style="post_style([selected_style,post_glow(post)])" style="display: inline-block;"
-           class="tweet js-stream-tweet js-actionable-tweet js-profile-popup-actionable original-tweet js-original-tweet has-cards has-content">
-        <div class="content">
-          <div class="AdaptiveMediaOuterContainer">
-            <div class="AdaptiveMedia-container">
-              <div class="AdaptiveMedia-singlePhoto">
-                <div class="AdaptiveMedia-photoContainer js-adaptive-photo "data-image-url="" data-element-context="platform_photo_card">
-                  <img data-aria-label-part ng-src="" alt="" style="width: 100%; top: -0px;">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="stream-item-header">
-            <a href="/users/{{ post.username }}" data-user-id="759251">
-              <img class="avatar js-action-profile-avatar" ng-src="/uploads/{{post.username}}" alt="">
-              <strong>{{ post.username }}</strong>
-            </a>
-            <span class="username js-action-profile-name" data-aria-label-part>&nbsp;</span>
-            <small class="time">
-              <span class="_timestamp">{{ post.date | amTimeAgo }}</span>
-            </small>
-            <div class="js-tweet-text-container">
-              <p class="TweetTextSize  js-tweet-text tweet-text">{{ post.message }}</p>
-            </div>
-            <div class="stream-item-footer">
-              <div style="float:right" class="">
-                <div ng-click="back(post); $event.stopPropagation()" ng-show="selected_style" style="float: right;" class="x flop medium"><b></b><b></b><b></b><b></b></div>
-                <button ng-click="!isDisabled && (message_needed = true) && $event.stopPropagation()" type="button" class="btnMark"
-                        onmouseout="this.childNodes[1].style.transform = 'rotate(0deg)'" onmouseover="this.childNodes[1].style.transform = 'rotate(45deg)'">
-                  <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
-                </button>
-              </div>
-              <textarea style="float: right; resize: none" ng-model="$parent.$parent.$parent.$parent.marking_msg" ng-if="message_needed" auto-focus
-                        ng-blur="$parent.message_needed=false; disableClicks(); mark(post)"
-                        ng-keyup="$event.keyCode == 13 && !$event.shiftKey && !($parent.message_needed=false) && mark(post)" placeholder="Reason? (This may be left blank)">
-              </textarea>
-            </div>
-          </div>
+       ng-if="post.message && (!selected_style || post._id == state_cookie) && (!post.replyto || selected_style)" Class="gridcell post">
+    <div ng-style="mergeObjs([selected_style,postGlow(post)])"  class="posting">
+      <img ng-src="" alt="" style="max-height: {{selected_style ? '620px' : '340px' }}; max-width: {{selected_style ? '620px' : '340px' }};">
+      <div class="post-body">
+        <a href="/users/{{ post.username }}" data-user-id="759251">
+          <img class="avatar"  ng-src="/uploads/{{post.username}}" alt="{{post.username}}'s profile.">
+          <strong>{{ post.username }}</strong>
+        </a>
+        <span class="spacer"></span>
+        <small class="time"><span class="timestamp">{{ post.date | amTimeAgo }}</span></small>
+        <p class="post-paragraph">{{ post.message }}</p>
+        <div style="position:relative">
+          <div ng-click="back(post); $event.stopPropagation()" ng-if="selected_style" style="position:absolute; left:640px; top:0px" class="x x-big"><b></b><b></b><b></b><b></b></div>
+        </div>
+        <div class="fright">
+
+          <div ng-click="back(post); $event.stopPropagation()" ng-if="selected_style" style="float: right;" class="x"><b></b><b></b><b></b><b></b></div>
+          <button ng-click="!isDisabled && ($parent.$parent.message_needed[post._id] = true) && $event.stopPropagation()"
+                  class="btnMark" onmouseout="this.childNodes[1].style.transform = 'rotate(0deg)'" onmouseover="this.childNodes[1].style.transform = 'rotate(45deg)'">
+            <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
+          </button>
+        </div>
+        <textarea class="reason-textarea" ng-model="$parent.$parent.$parent.$parent.$parent.marking_msg" ng-if="message_needed[post._id]" auto-focus ng-blur="reasonBlur(post)"
+                  ng-keyup="$event.keyCode == 13 && !$event.shiftKey && !($parent.$parent.message_needed[post._id]=false) && mark(post)" placeholder="Reason? (This may be left blank)">
+          </textarea>
+        <div class="bcmcontainer">
+          <button ng-class="selected_style ? 'btn-cancel-marking-shifted' : 'btn-cancel-marking'" ng-if="message_needed[post._id]"
+                  ng-click="$parent.$parent.$parent.$parent.$parent.message_needed[post._id] = false; $parent.$parent.$parent.$parent.$parent.marking_msg = '';
+                  $parent.$parent.$parent.$parent.$parent.cancel = true; $event.stopPropagation()">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+</div>

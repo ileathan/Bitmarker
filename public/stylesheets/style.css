@@ -1,4 +1,4 @@
-html { height: 100%; }
+html { height: 90%; }
 
 body {
     background-color: #b8babc;
@@ -9,7 +9,7 @@ body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.btn { margin-bottom:20px; }
+.btn { padding: 4px 7px 4px 7px; }
 
 #column_container {
     display: flex;              /* establish flex container */
@@ -20,53 +20,29 @@ body {
 }
 
 #row_container {
-    display: flex;              /* establish flex container */
-    flex-direction: row;     /* stack flex items vertically */
-    justify-content: center;    /* center items vertically, in this case */
-    align-items: center;        /* center items horizontally, in this case */
     margin: 5px;
-}
-
-.box {
-/*    width: 300px;*/
-    margin: 5px;
-    text-align: center;
 }
 
 .x {
-    -webkit-box-sizing: initial;
-    box-sizing: initial;
-
-    float:left;
+    box-sizing: content-box;
     position:relative;
-    margin:0;
-    padding:0;
     overflow:hidden;
     background:#CCC;
     border-radius:2px;
     border:solid 2px #FFF;
     transition: all .3s ease-out;
     cursor:pointer;
-}
-.x.medium {
-    width:20px;
     height:20px;
+    width: 20px;
 }
 
-.x.flop:hover{
+.x:hover{
     background:#BB3333;
     transform: rotate(90deg);
 }
 
 .x b{
-    display:block;
     position:absolute;
-    height:0;
-    width:0;
-    padding:0;
-    margin:0;
-}
-.x.medium b {
     border:solid 10px rgba(255,255,255,0);
 }
 
@@ -86,6 +62,35 @@ body {
 .x b:nth-child(4){
     border-right-color:#FFF;
     right:-2px;
+}
+
+.x-big b:nth-child(1){
+     border-top-color:#b8babc;
+     top:-2px;
+ }
+
+.x-big b:nth-child(2){
+    border-left-color:#b8babc;
+    left:-2px;
+}
+.x-big b:nth-child(3){
+    border-bottom-color:#b8babc;
+    bottom:-2px;
+}
+.x-big b:nth-child(4){
+    border-right-color:#b8babc;
+    right:-2px;
+}
+
+.x-big {
+    height: 40px;
+    width: 40px;
+    border:solid 2px #b8babc;
+
+}
+.x-big b{
+    position:absolute;
+    border:solid 20px rgba(255,255,255,0);
 }
 
 .btnMark:focus {
@@ -170,4 +175,149 @@ body {
     position:absolute;
     left:52px;
     top:28px;
+}
+.item {
+    position:relative;
+    display:inline-block;
+}
+.notify-badge{
+    position: absolute;
+    right:36px;
+    top:1px;
+    background:purple;
+    text-align: center;
+    border-radius: 25px 25px 25px 25px;
+    color:antiquewhite;
+    padding:3.5px 3.5px;
+    font-size:11px;
+}
+.notification{
+    background:lightgrey;
+    border-radius: 5px 5px 5px 5px;
+    color: #000000;
+    padding: 15px 15px 15px 15px;
+    font-size:11px;
+    max-width: 280px;
+    min-width: 200px;
+    word-wrap: break-word;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    white-space: pre-wrap;
+}
+.scrollable-menu {
+    height: auto;
+    max-height: 400px;
+    overflow-x:scroll;
+}
+
+textarea {
+    padding: 10px 20px 10px 30px
+}
+.avatar {
+    margin-bottom: 0px;
+    height: 28px;
+    width: 28px;
+    margin-right: 5px;
+    float: left;
+    margin-top: 3px;
+    border-radius: 5px;
+    border: 0;
+    vertical-align: middle;
+
+}
+.post-body {
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.timestamp {
+    font-size: 13px;
+    color: #657786;
+    position: absolute;
+    right: 0;
+    top: 0;
+    white-space: nowrap;
+}
+.posting {
+    background-color: #fff;
+    border-radius: 25px;
+    border: 1px solid #e6ecf0;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 15px;
+    padding: 15px;
+    padding-bottom: 5px;
+    padding-top: 0px;
+    cursor: pointer;
+    position: relative;
+    min-height: 51px;
+    width: 400px;
+}
+.spacer {
+    display:block;
+    height: 20px;
+}
+.spacer:before {
+    content: "";
+}
+.post-paragraph {
+    padding-top:10px;
+    padding-bottom:10px;
+    max-height: 180px;
+    overflow: scroll;
+    word-wrap: break-word;
+}
+.gridcell {
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    vertical-align: top;
+    margin-top:20px;
+}
+.selected-gridcell {
+    margin: -20px auto 0 auto;
+    text-align: center;
+}
+.post-textarea {
+    height:50px; transition: height 1.5s; border: 1px solid #EEEEEE;
+    box-shadow: 1px 1px 0 #DDDDDD;
+    display: inline-block;
+    margin: 2% auto;
+    padding: 11px 20px 10px 3px;
+    resize: none;
+    border-radius: 10px;
+    width: 500px;
+}
+
+.reason-textarea {
+    float: right; resize: none; border-radius: 10px; width:280px;
+}
+.avatar-navbar {
+    height:48px; width:48px; border-radius: 15px; padding: 5px 5px 5px 5px;
+}
+
+.nav>li>a, .nav>li>button {
+    line-height: 1;
+    padding: 0 14px 0 4px;
+}
+.fixed-container {
+z-index: 900; position: fixed; width: 100%; padding: 0px; background-color: #b8babc;
+}
+.fright {
+    float: right;
+}
+.btn-cancel-marking {
+    position: absolute; left: 323px; bottom: 1px; padding: 1px 2px 1px 2px;
+}
+.btn-cancel-marking-shifted {
+    position: absolute; left: 548px; bottom: 1px; padding: 1px 2px 1px 2px;
+}
+.bcmcontainer {
+    clear:both;
+}
+.comment-container {
+    width:900px; margin:0 auto;margin-top:50px;margin-bottom:20px; text-align: center;
 }

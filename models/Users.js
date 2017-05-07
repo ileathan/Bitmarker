@@ -6,6 +6,7 @@ var UsersSchema = new mongoose.Schema({
   "wallet": String,
   "balance": Number,
   "reputation": Number,
+  "notifications": Array,
   updated_at: { type: Date, default: Date.now },
 });
 module.exports = mongoose.model('Users', UsersSchema);

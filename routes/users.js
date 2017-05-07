@@ -4,19 +4,12 @@ var mongoose = require('mongoose');
 var Users = require('../models/Users.js');
 var Posts = require('../models/Posts');
 
-/* GET /users listing. */
-router.get('/', function(req, res, next) {
-  Users.find(function (err, users) {
-    if (err) return next(err);
-    res.json(users);
-  });
-});
-
 /* GET /users/id */
-router.get('/:id', function(req, res, next) {
-  Users.findOne({username: req.params.id}, function (err, post) {
+router.get('/:username', function(req, res, next) {
+  Users.findOne({username: new RegExp("^" + req.params.username + "$", "i") }, function (err, user) {
     if (err) return next(err);
-    res.json(post);
+    if (user) { res.send("This is " + user.username + "'s profile. <br> They have " + user.balance + " marks.") }
+    else { res.send("That user does not exist.") }
   });
 });
 
@@ -24,25 +17,21 @@ router.get('/:id', function(req, res, next) {
 router.post('/login', function(req, res, next) {
   var randomstring = require("randomstring");  
   var login_cookie = randomstring.generate();
-  Users.findOneAndUpdate(req.body, {"login-cookie": login_cookie },  function (err, post) {
+  console.log(req.body.username);
+  Users.findOneAndUpdate({'username': new RegExp("^" + req.body.username + "$", "i"), 'password': req.body.password },  {"login-cookie": login_cookie },  function (err, post) {
     if (err) return next(err);
-    if(post){
-      console.log(post);
-      res.cookie("login-cookie", login_cookie)
-      .render('bitmark', { title: "Bitmark" });//("Logged in as " + req.body.username)} else { res.send("Error logging in")     
-    } else { 
-      res.send("ERROR"); }
+    if (post) { res.cookie("login-cookie", login_cookie).render('bitmark', { title: "Bitmark" }) }
+    else { res.send("ERROR") }
   });
 });
 
 /* POST /users */
-router.post('/', function(req, res, next) {
+router.post('/createAccount', function(req, res, next) {
   var exec = require('child_process').exec;
-  var cmd = 'bitmarkd getnewaddress';
   var fs = require('fs');
   var path = require('path');
 
-  exec(cmd, function(error, stdout, stderr) {
+  exec('bitmarkd getnewaddress', function(error, stdout) {
     req.body.wallet = stdout.trim();
     req.body.balance = 10;
     req.body.reputation = 0;
@@ -55,20 +44,28 @@ router.post('/', function(req, res, next) {
 
 });
 
+/* GET /users listing. */
+//router.get('/', function(req, res, next) {
+//  Users.find(function (err, users) {
+//    if (err) return next(err);
+//    res.json(users);
+//  });
+//});
+
 /* PUT /users/:id */
-router.put('/:id', function(req, res, next) {
-  Users.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
-  });
-});
+//router.put('/:id', function(req, res, next) {
+//  Users.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
+//    if (err) return next(err);
+//    res.json(post);
+//  });
+//});
 
 /* DELETE /users/:id */
-router.delete('/:id', function(req, res, next) {
-  Users.findByIdAndRemove(req.params.id, req.body, function (err, post) {
-    if (err) return next(err);
-    res.json(post);
-  });
-});
+//router.delete('/:id', function(req, res, next) {
+//  Users.findByIdAndRemove(req.params.id, req.body, function (err, post) {
+//    if (err) return next(err);
+//    res.json(post);
+//  });
+//});
 
 module.exports = router;

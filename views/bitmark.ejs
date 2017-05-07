@@ -3,17 +3,15 @@
 <head>
   <title><%= title %></title>
   <script src="/javascripts/angular.min.js"></script>
-
   <script src="/javascripts/bitmark_script.js"></script>
   <script src="/javascripts/moment.min.js"></script>
   <script src="/javascripts/angular-moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="/javascripts/myjquery.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular-route.min.js"></script>
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
-  <link rel="stylesheet" href="/stylesheets/twitter_core.bundle.css">
-  <link rel="stylesheet" href="/stylesheets/twitter_more_1.bundle.css">
-  <link rel="stylesheet" href="/stylesheets/twitter_more_2.bundle.css">
   <link rel='stylesheet' href='/stylesheets/style.css' />
   <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
 
@@ -21,9 +19,95 @@
 </head> <!-- dependencies -->
 <body ng-controller="mainController">
 
-<ng-include src="'/templates/navbar.ejs'"></ng-include> <!-- navbar -->
+<!--<ng-include src="'/templates/navbar.ejs'"></ng-include>  navbar -->
 
-<div ng-show="wallet_status" style="display: inline-block; margin-top: 55px;">
+
+
+<nav style="height:50px" class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div style="margin-right:0; margin-left:0; padding-right:50px; width: 145px; height: 45px" class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a style="padding-left: 50px" class="navbar-brand" href="#">
+        <a class="fusion-logo-link" href="http://www.bitmark.io">
+          <img src="/images/bitmark-purple.png" width="45" height="45">
+        </a>
+      </a>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="padding-right:25px;">
+      <ul class="nav navbar-nav">
+        <li onClick="document.cookie='state=home; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'"
+            ng-click="$parent.home_status=true; $parent.profile_status=false; $parent.wallet_status=false"
+            ng-class="$parent.home_status?'active':''">
+          <a style="padding-top: 17px" href="#">Home</span></a>
+        </li>
+        <li onClick="document.cookie='state=wallet; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'"
+            ng-click="$parent.home_status=false; $parent.profile_status=false; $parent.wallet_status=true"
+            ng-class="$parent.wallet_status?'active':''">
+          <a style="padding-top: 17px" href="#">Wallet</a>
+        </li>
+        <li onClick="document.cookie='state=profile; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'"
+            ng-click="$parent.profile_status=true; $parent.home_status=false; $parent.wallet_status=false"
+            ng-class="$parent.profile_status?'active':''">
+          <a style="padding-top: 17px" href="#">Profile</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+
+
+            <div class="item">
+              <span ng-if="notifications.length > 0" class="notify-badge">{{ notificationAmount() }}</span>
+              <img class="avatar-navbar" ng-src="/uploads/{{data.username}}" alt="">
+            </div>
+
+
+            <span title="Your reputation." class="reputation">{{$parent.reputation||0}}</span>
+            <span title="Your balance." class="balance">{{$parent.balance}}</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li ng-repeat="notification in notifications track by $index">
+              <a href="#" ng-click="notificationClicked(notification)">
+                {{notification.amount}} {{notification.amount == 1 ? "reply" : "replies"}} to your post
+                <div class="notification">{{ notification.message | limitTo: 130 }}{{ notification.message.length > 130 ? '&hellip;' : '' }}</div>
+              </a>
+            </li>
+            <!-- <li onClick="document.cookie='state=home'" ng-click="$parent.home_status=true; $parent.profile_status=false; $parent.wallet_status=false"
+              ng-class="$parent.home_status?'active':''">
+            <a href="#">Home</a>
+          </li>
+          <li onClick="document.cookie='state=wallet'" ng-click="$parent.home_status=false; $parent.profile_status=false; $parent.wallet_status=true"
+              ng-class="$parent.wallet_status?'active':''">
+            <a href="#">Wallet</a>
+          </li>
+          <li onClick="document.cookie='state=profile'" ng-click="$parent.profile_status=true; $parent.home_status=false; $parent.wallet_status=false"
+              ng-class="$parent.profile_status?'active':''">
+            <a href="#">Profile</a>
+          </li> -->
+            <li class="nav-divider"></li>
+            <li><a ng-click="logout()" href="#">Sign Out</a></li>
+          </ul>
+        </li>
+      </ul>
+      <div class="navbar-form navbar-right">
+        <input style="background-color: #7f7f7f;border-radius: 25px;" ng-show="!selected_style" type="text" ng-model="$parent.search_posts" class="form-control ng-pristine ng-untouched ng-valid ng-empty" placeholder="Search Posts">
+        <input style="background-color: #7f7f7f;border-radius: 25px;" ng-show="selected_style" type="text" ng-model="$parent.search_replies" class="form-control ng-pristine ng-untouched ng-valid ng-empty" placeholder="Search Replies">
+      </div>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+
+
+<div ng-if="wallet_status" style="display: inline-block; margin-top: 55px;">
   Your wallet address is <code>{{ wallet }}</code>, and you have <code>{{ balance }}</code> marks.
   <br />
   To increase your balance send Bitmarks (BTM) to your wallet address. <code>1 BTM = 1000 Marks.</code>
@@ -31,7 +115,7 @@
 
 <div ng-if="profile_status" style="display: inline-block">
   <div style="margin-top:55px;"><br>
-    <img style="display:block" ng-src="/uploads/{{data.username}}" width="400" height="400">
+    <img style="display:block; max-width: 500px; max-height: 500px" ng-src="/uploads/{{data.username}}">
     <form style="display: inline-block" action="/uploads" method="post" enctype="multipart/form-data">
       <label for="file">To change profile picture choose file:</label><br>
       <input style="display: inline-block" type="file" name="upl" ng-model="file" id="file">
@@ -40,46 +124,30 @@
   </div>
 </div> <!-- profile page -->
 
-<div ng-show="home_status"  class="three-col logged-out Streams StreamsColor--orange"> <!-- Start home page -->
+<div ng-if="home_status"> <!-- Start home page -->
 
-<div style="margin-top:55px; text-align: center;">
-  <div style="width:900px; margin:0 auto;">
-  <img ng-if="!selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
-   <textarea ng-if="!selected_style" ng-click="$event.target.rows=4" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
-             ng-model="data.message" cols="50" rows="1" class="form-control" placeholder="What would you like to post {{data.username}}?" style="border: 1px solid #EEEEEE;
-    box-shadow: 1px 1px 0 #DDDDDD;
-    display: inline-block;
-    margin: 2% auto;
-    padding: 11px 20px 10px 70px;
-    resize: none;
-    border-radius: 50px;
-    width: 500px;
-    ">
-   </textarea>
-  </div><br />
- </div> <!-- post textarea -->
+  <div class="comment-container">
+    <button ng-click="fuck()">fuck</button>
+    <img ng-if="!selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
+     <textarea ng-click="$event.target.style.height='120px'" ng-blur="$event.target.style.height='50px'" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
+               ng-if="!selected_style" ng-model="data.message" class="post-textarea" placeholder="What would you like to post {{data.username}}?">
+     </textarea>
+  </div>
 
-<ng-include src="'/templates/posts.ejs'"></ng-include> <!-- posts -->
-
-<div style="margin-top:15px; margin-bottom:25px; text-align: center;">
-  <div ng-class="post_status" style="width:900px; margin:0 auto;">
+  <!-- POSTS -->
+  <ng-include src="'/templates/posts.ejs'"></ng-include>
+  <!-- POSTS -->
+  <div class="comment-container" id="reply" post-height="0">
     <img ng-if="selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
-    <textarea cols="50" ng-if="selected_style" ng-click="$event.target.rows=4" ng-blur="$event.target.rows=1" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
-             ng-model="data.message" rows="1" class="form-control"
-             placeholder="What would you like to reply {{data.username}}?" style="border: 1px solid #EEEEEE;
-    box-shadow: 1px 1px 0 #DDDDDD;
-    display: inline-block;
-    margin: 2% auto;
-    padding: 11px 20px 10px 70px;
-    resize: none;
-    border-radius: 50px;
-    width: 500px;
-    ">
+    <textarea ng-click="$event.target.style.height='120px'" ng-blur="$event.target.style.height='50px'" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
+            ng-if="selected_style"ng-model="data.message" class="post-textarea" placeholder="What would you like to reply {{data.username}}?" >
     </textarea>
   </div>
- </div> <!-- reply textarea -->
 
-<ng-include src="'/templates/replies.ejs'"></ng-include> <!-- replies -->
+
+  <!-- REPLIES -->
+  <ng-include src="'/templates/replies.ejs'"></ng-include>
+  <!-- REPLIES -->
 
 </div> <!-- End home page -->
 </body>
