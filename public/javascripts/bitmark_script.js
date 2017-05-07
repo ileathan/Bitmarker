@@ -1,6 +1,5 @@
 app = angular.module('myApp', ['angularMoment', 'ngRoute']);
 
-<<<<<<< HEAD
 // app.run(['$route', '$rootScope', '$location', function ($route, $rootScope, $location) {
 //   var original = $location.path;
 //   $location.path = function (path, reload) {
@@ -26,15 +25,6 @@ app.controller('mainController', function($scope, $http, $interval, $timeout) {
   };
 
   $scope.mergeObjs = function(objectList) {
-=======
-  $scope.data = {};
-  
-  $scope.post_glow = function (post) {
-    return {  "box-shadow" : "0 0 " + post.marks / 2 + "px purple" };
-  }
-
-  $scope.post_style = function(objectList) {
->>>>>>> a76c4ca1452a12f34e6f989b754c2e7abe9eeb26
     var obj = {};
     objectList.forEach(function(x) {
       for (var i in x)
