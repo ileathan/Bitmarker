@@ -2,26 +2,20 @@
 <html ng-app="myApp">
 <head>
   <title><%= title %></title>
-  <script src="/javascripts/angular.min.js"></script>
-  <script src="/javascripts/bitmark_script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
   <script src="/javascripts/moment.min.js"></script>
   <script src="/javascripts/angular-moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="/javascripts/myjquery.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-route.min.js"></script>
+  <script src="/javascripts/bitmark_script.js"></script>
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
   <link rel='stylesheet' href='/stylesheets/style.css' />
   <link rel="shortcut icon" href="/favicon.ico?" type="image/x-icon">
 
- <!-- load angular-moment -->
+  <!-- load angular-moment -->
 </head> <!-- dependencies -->
 <body ng-controller="mainController">
-
-<!--<ng-include src="'/templates/navbar.ejs'"></ng-include>  navbar -->
-
-
 
 <nav style="height:50px" class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
@@ -42,55 +36,33 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="padding-right:25px;">
       <ul class="nav navbar-nav">
-        <li onClick="document.cookie='state=home; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'"
-            ng-click="$parent.home_status=true; $parent.profile_status=false; $parent.wallet_status=false"
-            ng-class="$parent.home_status?'active':''">
-          <a style="padding-top: 17px" href="#">Home</span></a>
+        <li ng-click="updateState('/', 'home')" ng-class="state_cookie=='home'?'active':''">
+          <a style="padding-top: 17px" href="#">Home {{replyto}}</a>
         </li>
-        <li onClick="document.cookie='state=wallet; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'"
-            ng-click="$parent.home_status=false; $parent.profile_status=false; $parent.wallet_status=true"
-            ng-class="$parent.wallet_status?'active':''">
+        <li ng-click="updateState('/', 'wallet')" ng-class="state_cookie=='wallet'?'active':''">
           <a style="padding-top: 17px" href="#">Wallet</a>
         </li>
-        <li onClick="document.cookie='state=profile; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'"
-            ng-click="$parent.profile_status=true; $parent.home_status=false; $parent.wallet_status=false"
-            ng-class="$parent.profile_status?'active':''">
+        <li ng-click="updateState('/', 'profile')" ng-class="state_cookie=='profile'?'active':''">
           <a style="padding-top: 17px" href="#">Profile</a>
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-
-
             <div class="item">
-              <span ng-if="notifications.length > 0" class="notify-badge">{{ notificationAmount() }}</span>
+              <span ng-if="data.notifications.length > 0" class="notify-badge">{{ notificationAmount() }}</span>
               <img class="avatar-navbar" ng-src="/uploads/{{data.username}}" alt="">
             </div>
-
-
-            <span title="Your reputation." class="reputation">{{$parent.reputation||0}}</span>
-            <span title="Your balance." class="balance">{{$parent.balance}}</span>
+            <span title="Your reputation." class="reputation">{{data.reputation||0}}</span>
+            <span title="Your balance." class="balance">{{data.balance||0}}</span>
           </a>
           <ul class="dropdown-menu">
-            <li ng-repeat="notification in notifications track by $index">
+            <li ng-repeat="notification in data.notifications track by $index">
               <a href="#" ng-click="notificationClicked(notification)">
                 {{notification.amount}} {{notification.amount == 1 ? "reply" : "replies"}} to your post
                 <div class="notification">{{ notification.message | limitTo: 130 }}{{ notification.message.length > 130 ? '&hellip;' : '' }}</div>
               </a>
             </li>
-            <!-- <li onClick="document.cookie='state=home'" ng-click="$parent.home_status=true; $parent.profile_status=false; $parent.wallet_status=false"
-              ng-class="$parent.home_status?'active':''">
-            <a href="#">Home</a>
-          </li>
-          <li onClick="document.cookie='state=wallet'" ng-click="$parent.home_status=false; $parent.profile_status=false; $parent.wallet_status=true"
-              ng-class="$parent.wallet_status?'active':''">
-            <a href="#">Wallet</a>
-          </li>
-          <li onClick="document.cookie='state=profile'" ng-click="$parent.profile_status=true; $parent.home_status=false; $parent.wallet_status=false"
-              ng-class="$parent.profile_status?'active':''">
-            <a href="#">Profile</a>
-          </li> -->
             <li class="nav-divider"></li>
             <li><a ng-click="logout()" href="#">Sign Out</a></li>
           </ul>
@@ -102,52 +74,128 @@
       </div>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
+</nav>
 
 
 
-
-<div ng-if="wallet_status" style="display: inline-block; margin-top: 55px;">
-  Your wallet address is <code>{{ wallet }}</code>, and you have <code>{{ balance }}</code> marks.
+<div ng-if="state_cookie=='other'" style="display: inline-block; margin-top: 55px;">
+  Your  wallet address is <code>{{ data.wallet }}</code>, and you have <code>{{ data.balance }}</code> marks.
   <br />
   To increase your balance send Bitmarks (BTM) to your wallet address. <code>1 BTM = 1000 Marks.</code>
 </div>
 
-<div ng-if="profile_status" style="display: inline-block">
+
+<div ng-if="state_cookie=='wallet'" style="display: inline-block; margin-top: 55px;">
+  Your  wallet address is <code>{{ data.wallet }}</code>, and you have <code>{{ data.balance }}</code> marks.
+  <br />
+  To increase your balance send Bitmarks (BTM) to your wallet address. <code>1 BTM = 1000 Marks.</code>
+</div>
+
+<div ng-if="state_cookie=='profile'" class="inline">
   <div style="margin-top:55px;"><br>
-    <img style="display:block; max-width: 500px; max-height: 500px" ng-src="/uploads/{{data.username}}">
-    <form style="display: inline-block" action="/uploads" method="post" enctype="multipart/form-data">
+    <input type="text"
+    <img style="display:block; max-width: 500px; max-height: 500px" ng-src="/uploads/{{user_search || data.username}}">
+    <form class="inline" action="/uploads" method="post" enctype="multipart/form-data">
       <label for="file">To change profile picture choose file:</label><br>
       <input style="display: inline-block" type="file" name="upl" ng-model="file" id="file">
       <input class="btn btn-success" type="submit" name="submit" value="Submit">
     </form>
   </div>
-</div> <!-- profile page -->
-
-<div ng-if="home_status"> <!-- Start home page -->
-
-  <div class="comment-container">
-    <button ng-click="fuck()">fuck</button>
-    <img ng-if="!selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
-     <textarea ng-click="$event.target.style.height='120px'" ng-blur="$event.target.style.height='50px'" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
-               ng-if="!selected_style" ng-model="data.message" class="post-textarea" placeholder="What would you like to post {{data.username}}?">
-     </textarea>
-  </div>
-
-  <!-- POSTS -->
-  <ng-include src="'/templates/posts.ejs'"></ng-include>
-  <!-- POSTS -->
-  <div class="comment-container" id="reply" post-height="0">
-    <img ng-if="selected_style" style="display: inline-block; border-radius: 50px;" ng-src="/uploads/{{data.username}}" width="80" height="80">
+</div> <!-- profile page end -->
+<div ng-if="state_cookie != 'profile' && state_cookie != 'wallet' && state_cookie !='other'"> <!-- Start home page -->
+  <div ng-if="!selected_style" class="comment-container">
+    <img class="comment-img" ng-src="/uploads/{{data.username}}">
     <textarea ng-click="$event.target.style.height='120px'" ng-blur="$event.target.style.height='50px'" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
-            ng-if="selected_style"ng-model="data.message" class="post-textarea" placeholder="What would you like to reply {{data.username}}?" >
+              ng-model="$parent.$parent.message" class="post-textarea" placeholder="What would you like to post {{data.username}}?">
     </textarea>
   </div>
+  <!-- POSTS END -->
+  <!-- REPLY START -->
+    <div ng-class="selected_style ? 'selected-gridcell fixed-container' : 'selected-gridcell'" >
+      <div ng-style="selected_style"
+           ng-click="!isDisabled && select(post, $event)" ng-repeat="post in posts | reverse | filter: search_posts track by $index"
+           ng-if="post.message && (!selected_style || post._id == state_cookie) && (!post.replyto || selected_style)" Class="gridcell post">
+        <div ng-style="mergeObjs([selected_style,postGlow(post)])"  class="posting">
+          <img ng-src="" alt="" style="max-height: {{selected_style ? '620px' : '340px' }}; max-width: {{selected_style ? '620px' : '340px' }};">
+          <div class="post-body">
+            <div ng-click="$event.preventBubble()">
+              <a href="/users/{{ post.username }}" target="_parent">
+                <img class="avatar" ng-src="/uploads/{{post.username}}" alt="">
+                <strong>{{ post.username }}</strong>
+              </a>
+            </div>
+            <span class="spacer"></span>
+            <small class="time"><span class="timestamp">{{ post.date | amTimeAgo}}</span></small>
+            <p class="post-paragraph">{{ post.message }}</p>
+            <div style="position:relative">
+              <div ng-click="back({'replyto': false}); $event.stopPropagation()" ng-if="selected_style" class="x x-big"><b></b><b></b><b></b><b></b></div>
+            </div>
+            <div class="fright">
 
-
-  <!-- REPLIES -->
-  <ng-include src="'/templates/replies.ejs'"></ng-include>
-  <!-- REPLIES -->
-
-</div> <!-- End home page -->
+              <div ng-click="back(post); $event.stopPropagation()" ng-if="selected_style" style="float: right;" class="x"><b></b><b></b><b></b><b></b></div>
+              <button ng-click="!isDisabled && ($parent.$parent.message_needed[post._id] = true) && $event.stopPropagation()"
+                      class="btnMark" ng-mouseover="$event.target.childNodes[1].style.transform = 'rotate(0deg)'" ng-mouseleave="$event.target.childNodes[1].style.transform = 'rotate(45deg)'">
+                <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
+              </button>
+            </div>
+            <textarea class="reason-textarea" ng-model="$parent.$parent.$parent.$parent.$parent.marking_msg" ng-if="message_needed[post._id]" auto-focus ng-blur="reasonBlur(post)"
+                      ng-keyup="$event.keyCode == 13 && !$event.shiftKey && !($parent.$parent.message_needed[post._id]=false) && mark(post)" placeholder="Reason? (This may be left blank)">
+          </textarea>
+            <div class="bcmcontainer">
+              <button ng-class="selected_style ? 'btn-cancel-marking-shifted' : 'btn-cancel-marking'" ng-if="message_needed[post._id]"
+                      ng-click="cancelMarking(post); $event.stopPropagation()">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- POSTS  END-->
+    <div ng-show="selected_style" ng-style="{'padding-top': padReply()}" class="comment-container" id="reply">
+      <img class="comment-img"selected_style" ng-src="/uploads/{{data.username}}">
+      <textarea ng-click="$event.target.style.height='120px'" ng-blur="$event.target.style.height='50px'" ng-keyup="$event.keyCode == 13 && !$event.shiftKey && create($event);"
+                ng-model="$parent.message" class="post-textarea" placeholder="What would you like to reply {{data.username}}?" >
+    </textarea>
+    </div>
+    <!-- REPLIES  START-->
+    <div class="selected-gridcell">
+      <div ng-click="!isDisabled && select(post, $event)"
+           ng-if="selected_style && post.message && post.replyto == state_cookie" ng-repeat="post in posts | filter: search_replies track by $index" Class="gridcell">
+        <div style="display: inline-block" class="posting">
+          <img data-aria-label-part ng-src="" alt="" style="width: 100%; top: -0px;">
+          <div class="post-body">
+            <div ng-click="profileClick(post.username); $event.preventBubble()">
+              <a href="/users/{{ post.username }}" target="_parent">
+                <img class="avatar" ng-src="/uploads/{{post.username}}" alt="">
+                <strong>{{ post.username }}</strong>
+              </a>
+            </div>
+            <span class="spacer"></span>
+            <small class="time">
+              <span class="timestamp">{{ post.date | amTimeAgo }}</span>
+            </small>
+            <p class="post-paragraph">{{ post.message }}</p>
+            <div style="float:right">
+              <button ng-click="!isDisabled && ($parent.message_needed[post._id] = true) && $event.stopPropagation()" type="button" class="btnMark"
+                      onmouseout="this.childNodes[1].style.transform = 'rotate(0deg)'" onmouseover="this.childNodes[1].style.transform = 'rotate(45deg)'">
+                <span class="iconMark"></span><span class="markAmnt">{{post.marks}}</span>
+              </button>
+            </div>
+            <textarea class="reason-textarea" ng-model="$parent.$parent.$parent.$parent.$parent.marking_msg" ng-if="message_needed[post._id]" auto-focus
+                      ng-blur="$parent.message_needed[post._id]=false; disableClicks(); mark(post)"
+                      ng-keyup="$event.keyCode == 13 && !$event.shiftKey && !($parent.message_needed[post._id]=false) && mark(post)" placeholder="Reason? (This may be left blank)">
+          </textarea>
+            <div style="clear:both; position:relative; margin-right: 38px">
+              <button class="btn-cancel-marking" ng-if="message_needed[post._id]"
+                      ng-click="cancelMarking(post); $event.stopPropagation()">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

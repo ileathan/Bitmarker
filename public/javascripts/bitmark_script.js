@@ -1,24 +1,12 @@
-app = angular.module('myApp', ['angularMoment', 'ngRoute']);
+angular.module('myApp', ['angularMoment', 'ngRoute'])
 
-// app.run(['$route', '$rootScope', '$location', function ($route, $rootScope, $location) {
-//   var original = $location.path;
-//   $location.path = function (path, reload) {
-//     if (reload === false) {
-//       var lastRoute = $route.current;
-//       var un = $rootScope.$on('$locationChangeSuccess', function () {
-//         $route.current = lastRoute;
-//         un();
-//       });
-//     }
-//     return original.apply($location, [path]);
-//   };
-// }]);
+.config(function($locationProvider) {
+  $locationProvider.html5Mode({ enabled: true, requireBase: false })
+})
 
-app.controller('mainController', function($scope, $http, $interval, $timeout) {
-  $scope.data = {};
-  $scope.notifications = [];
-  $scope.cancel = false;
-  $scope.message_needed = {};
+.controller('mainController', function($scope, $http, $interval, $timeout, $location) {
+  $scope.state_cookie = document.cookie.substr(document.cookie.indexOf("state")+6, document.cookie.indexOf(";")-6);
+  $scope.data = {}; $scope.message_needed = {}; $scope.replyto = "";
 
   $scope.postGlow = function (post) {
     return {  "box-shadow" : "0 0 " + post.marks / 2 + "px purple" };
@@ -33,39 +21,20 @@ app.controller('mainController', function($scope, $http, $interval, $timeout) {
     return obj;
   };
 
-  // extracts the value of cookie['state'].
-  $scope.state_cookie = document.cookie.substr(document.cookie.indexOf("state")+6, document.cookie.indexOf(";")-6);
-  if     ($scope.state_cookie == "profile") { $scope.profile_status = true }
-  else if($scope.state_cookie == "home") { $scope.home_status = true; $scope.data.replyto = "" }
-  else if($scope.state_cookie == "wallet") { $scope.wallet_status = true }
-  else if($scope.state_cookie) { $scope.selected_style = { "width" : "650px" }; $scope.home_status = true; $scope.data.replyto = $scope.state_cookie; }
-  else { $scope.home_status = true; $scope.state_cookie = "home"; document.cookie = 'state=home; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;'; }
 
-
-  $.get("/api/posts", function(data) { $scope.posts = data });
-  setInterval(function(){
-    $.get("/api/posts", function(data) {
-      $scope.posts = data;
+  $http.get("/api/posts").then(function(res) { $scope.posts = res.data });
+  $interval(function(){
+    $http.get("/api/posts").then(function(res) {
+      $scope.posts = res.data;
     })
   }, 500);
 
-  $.get("/api/info", function(data) {
-    $scope.data.username = data.username;
-    $scope.wallet = data.wallet;
-    $scope.balance = data.balance;
-    $scope.notifications = data.notifications;
-  });
-  setInterval(function(){
-    $.get("/api/info", function(data) {
-      $scope.balance = data.balance;
-      $scope.notifications = data.notifications;
+  $http.get("/api/info").then(function(res) { $scope.data = res.data });
+  $interval(function(){
+    $http.get("/api/info").then(function(res) {
+      $scope.data = res.data;
     })
   }, 1000);
-
-  $scope.fuck = function() {
-    window.history.pushState("","","/api/post/");
-    alert(window.location.pathname);
-  };
 
   $scope.notificationClicked = function(notification) {
     $scope.select({'_id' : notification.id });
@@ -73,12 +42,11 @@ app.controller('mainController', function($scope, $http, $interval, $timeout) {
   };
 
   $scope.reasonBlur = function (post) {
-//    alert("entered disableClicks(), $scope.cancel is: " + $scope.cancel);
     $scope.cancel = false;
     $scope.isDisabled = true;
     $timeout(function() {
       $scope.isDisabled = false;
-      if ($scope.cancel == false) {
+      if (!$scope.cancel) {
         $scope.message_needed[post._id] = false;
         $scope.mark(post)
       }
@@ -87,110 +55,133 @@ app.controller('mainController', function($scope, $http, $interval, $timeout) {
 
   $scope.mark = function (post) {
     $scope.message_needed[post._id] = false;
-//    alert("entered mark()" + $scope.message_needed);
     post.marking_msg = $scope.marking_msg; $scope.marking_msg = "";
     $scope.data.username == post.username || $http.post("/api/mark/", post).then(function(){ $scope.balance--; });
   };
 
+  // $scope.updateState = function (path, data) {
+  //   var data_state_cookie = data;
+  //   if (data == 'home') {
+  //     if ($scope.replyto.length == 24) data_state_cookie = $scope.replyto;
+  //   }
+  //   $location.old = $location.state();
+  //   $location.new = {
+  //     selected_style: ($scope.replyto.length==24?{ 'width': '650px' }:''),
+  //     replyto: (data.length==24?data:$scope.replyto),
+  //     state_cookie: data_state_cookie
+  //   };
+  //   try { if ($location.new.state_cookie === $location.old.state_cookie) return; } catch(e){}
+  //   data == 'home' && (data = '');
+  //   $location.state($location.new).path(path + data);
+  //  };
+
   $scope.select = function (post) {
-    // NON HTML5 compatable browsers must use only window.location.href = "/api/posts/" + post._id
-    $scope.selected_style = { "width" : "650px" };
-    $scope.data.replyto = post._id;
+    $scope.selected_style = {"width": "650px"};
+    $scope.replyto = post._id;
     document.cookie = 'state=' + post._id + "; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;";
     $scope.state_cookie = post._id;
     window.scrollTo(0, 0);
-    window.history.pushState("","","/api/posts/"+post._id)
-    var height = document.getElementsByClassName("post")[0].offsetHeight;
-    document.getElementById("reply").style.paddingTop = 20 + height + 'px';
+    $scope.updateState('/api/posts/', post._id);
   };
 
+    // Watch for location changes so we can apply state accordingly
+  $scope.$on('$locationChangeSuccess', function (a, newUrl, oldUrl) {
+    try {
+      var state_data = $location.state();
+      $scope.selected_style = state_data.selected_style;
+      $scope.replyto = state_data.replyto;
+      $scope.state_cookie = state_data.state_cookie;
+      document.cookie = 'state=' + state_data.state_cookie + '; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;';
+      window.scrollTo(0,0);
+    } catch(e) {}
+  });
+
+  $scope.padReply = function() {
+   try { return $('.post')[0].scrollHeight } catch(e) { return 170 }
+
+  };
+
+  if ($scope.state_cookie.length === 24) $scope.select({'_id': $scope.state_cookie});
+
   $scope.notificationAmount = function () {
-    var amount = 0;
-    $scope.notifications.forEach(function(n) { amount += n.amount });
-    return amount
+   var amount = 0;
+   $scope.data.notifications.forEach(function(n) { amount += n.amount });
+   return amount
   };
 
   $scope.back = function(post) {
     document.cookie = 'state=' + post.replyto + "; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;";
     if (post.replyto) {
       $scope.state_cookie = post.replyto;
-      $scope.data.replyto = post.replyto;
-      //window.location.href = "/api/posts/" + post.replyto;
-    }
-    else {
-      //window.location.href = "/"
-      $scope.selected_style = ""; $scope.data.replyto = "";
-      window.history.pushState("","","/");
+      $scope.replyto = post.replyto;
+      $scope.updateState('/api/posts/', post.replyto)
+    } else {
+      $scope.selected_style = ""; $scope.replyto = "";
+      $scope.updateState('/', 'home');
     }
     window.scrollTo(0, 0);
   };
 
   $scope.create = function ($event) {
-    $http.post("/api/create", $scope.data).then(function(res) {
-      $scope.data.message = "";
-      $event.target.blur();
-      $event.target.rows = 1;
+    $http.post("/api/create", { 'message': $scope.message, 'replyto': $scope.replyto }).then(function(res) {
+      $scope.message = ""; $event.target.blur(); $event.target.rows = 1;
     })
   };
 
+  $scope.cancelMarking = function(post) {
+    $scope.message_needed[post._id] = false; $scope.marking_msg = ''; $scope.cancel = true;
+  };
 
   $scope.logout = function() {
     document.cookie = 'login-cookie' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
     document.cookie = 'state' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
     window.location.href = "/";
-  };
+  }
 
-
-  //$timeout(function() { alert(window.location.pathname)},4000);
-
-
-}).filter('reverse', function() {
-    return function(items) {
-      if (typeof items !== 'undefined') {
-        return items.slice().reverse();
-      }
+})
+.filter('reverse', function() {
+  return function(items) {
+    if (typeof items !== 'undefined') {
+      return items.slice().reverse();
     }
-}).directive('focusOnShow', function($timeout) {
-  return {
-    restrict: 'A',
-    link: function($scope, $element, $attr) {
-      if ($attr.ngShow){
-        $scope.$watch($attr.ngShow, function(newValue){
-          if(newValue){
-            $timeout(function(){
-              $element[0].focus();
-            }, 0);
-          }
-        })
-      }
-      if ($attr.ngHide){
-        $scope.$watch($attr.ngHide, function(newValue){
-          if(!newValue){
-            $timeout(function(){
-              $element[0].focus();
-            }, 0);
-          }
-        })
-      }
-
-    }
-  };
-}).directive('autoFocus', function() {
+  }
+})
+//   .directive('padReply', function($timeout) {
+//   return {
+//     restrict: 'A',
+//     link: function(scope, element, attr) {
+//       if (attr.ngShow){
+//         scope.$watch(attr.ngShow, function(ngShow){
+//           if(ngShow){
+//             $timeout(function(){
+//               element[0].style.paddingTop = document.getElementsByClassName('post')[0].scrollHeight + 'px';
+//               alert(document.getElementsByClassName('post')[0].scrollHeight);
+//
+//               alert(element[0].style.paddingTop);
+//
+//             }, 250);
+//           }
+//         })
+//       }
+//     }
+//   };
+// })
+.directive('autoFocus', function() {
   return {
     link: {
       post: function (scope, element, attr) { element[0].focus() }
     }
   }
-}).directive('postHeight', function($timeout){
-  return {
-    link: {
-      post: function (scope, element, attr) {
-        $timeout(function(){
-          var result = document.getElementsByClassName("post")[0];
-          var height = result.scrollHeight || 170;
-          element[0].style.paddingTop = height + +attr.postHeight + "px";
-        }, 400)
-      }
-    }
-  }
-});
+ })
+//  .directive('padReply', function($timeout){
+//   return {
+//     link: {
+//       post: function (scope, element, attr) {
+//         if (!attr.postHeight) attr.postHeight = 0;
+//         $timeout(function(){
+//           try{document.getElementById('reply').style.paddingTop = +(element[0].scrollHeight || 170) + +attr.postHeight + 'px'}catch(e){}
+//         }, 250)
+//       }
+//     }
+//   }
+//  });

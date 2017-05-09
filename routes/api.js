@@ -7,12 +7,9 @@ router.get('/posts/:id', function(req, res, next) {
   res.cookie("state", req.params.id, { expires: new Date(Date.now() + 9000000) }).render('bitmark', { title: "Bitmark" });
 });
 
-router.get('/post/:id', function(req, res, next) {
+router.get('/reset', function(req, res, next) {
   Posts.deleteMany({},function(){});
   Users.deleteMany({},function(){});
-  Posts.findOne({ '_id': req.params.id }, function(err, post) {
-    res.json(post);
-  });
 });
 
 router.get('/posts', function(req, res, next) {
@@ -79,14 +76,14 @@ router.get('/delete_notification/:id', function(req, res, next) {
 router.post('/create', function(req, res, next) {
   Users.findOne({"login-cookie": req.cookies["login-cookie"]}, function (err, creating_user) {
     if (!creating_user) return; // NOT LOGGED IN
-    req.body.username = creating_user.username;
     req.body.marks = 0;
+    req.body.username = creating_user.username;
     Posts.create(req.body, function (err, created_post) {
       res.json(created_post);
+      console.log(created_post);
       if (req.body.replyto) {
         Posts.findById(req.body.replyto, function (err, post) {
-          if (post.username == creating_user.username) { return } // Dont create notification is user is replying to themselves
-          createNotification(post)
+          if (post.username != creating_user.username) { createNotification(post) } // Dont create notification is user is replying to themselves
         })
       }
     })

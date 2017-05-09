@@ -15,4 +15,18 @@ router.get('/', function(req, res, next) {
   } else { res.render('index', {title: "Bitmark" }) }
 });
 
+router.get('/wallet', function(req, res, next) {
+  res.cookie("state", 'wallet', { expires: new Date(Date.now() + 9000000) }).render('bitmark', { title: "Bitmark" });
+});
+
+router.get('/profile', function(req, res, next) {
+  res.cookie("state", 'profile', { expires: new Date(Date.now() + 9000000) }).render('bitmark', { title: "Bitmark" });
+});
+
+router.get('/other', function(req, res, next) {
+  res.cookie("state", 'other', { expires: new Date(Date.now() + 9000000) }).render('bitmark', { title: "Bitmark" });
+});
+
+
+
 module.exports = router;
