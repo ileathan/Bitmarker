@@ -6,13 +6,13 @@ angular.module('myApp', ['angularMoment', 'ngRoute'])
 
 .controller('mainController', function($scope, $http, $interval, $timeout, $location) {
   $scope.state_cookie = document.cookie.substr(document.cookie.indexOf("state")+6, document.cookie.indexOf(";")-6);
-  $scope.data = {}; $scope.message_needed = {}; $scope.replyto = "";
+  $scope.data = {}; $scope.message_needed = {}; $scope.replyto = ""; $scope.loaded = {}; $scope.isPadable = true;
 
   $scope.postGlow = function (post) {
     return {  "box-shadow" : "0 0 " + post.marks / 2 + "px purple" };
   };
 
-  $scope.mergeObjs = function(objectList) {
+  $scope.mergeStyles = function(objectList) {
     var obj = {};
     objectList.forEach(function(x) {
       for (var i in x)
@@ -59,21 +59,21 @@ angular.module('myApp', ['angularMoment', 'ngRoute'])
     $scope.data.username == post.username || $http.post("/api/mark/", post).then(function(){ $scope.balance--; });
   };
 
-  // $scope.updateState = function (path, data) {
-  //   var data_state_cookie = data;
-  //   if (data == 'home') {
-  //     if ($scope.replyto.length == 24) data_state_cookie = $scope.replyto;
-  //   }
-  //   $location.old = $location.state();
-  //   $location.new = {
-  //     selected_style: ($scope.replyto.length==24?{ 'width': '650px' }:''),
-  //     replyto: (data.length==24?data:$scope.replyto),
-  //     state_cookie: data_state_cookie
-  //   };
-  //   try { if ($location.new.state_cookie === $location.old.state_cookie) return; } catch(e){}
-  //   data == 'home' && (data = '');
-  //   $location.state($location.new).path(path + data);
-  //  };
+  $scope.updateState = function (path, data) {
+    var data_state_cookie = data;
+    if (data == 'home') {
+      if ($scope.replyto.length == 24) data_state_cookie = $scope.replyto;
+    }
+    $location.old = $location.state();
+    $location.new = {
+      selected_style: ($scope.replyto.length==24?{ 'width': '650px' }:''),
+      replyto: $scope.replyto, //(data.length==24?data:$scope.replyto),
+      state_cookie: data_state_cookie
+    };
+    if ($location.new.state_cookie === $location.old.state_cookie) return;
+    data == 'home' && (data = '');
+    $location.state($location.new).path(path + data);
+   };
 
   $scope.select = function (post) {
     $scope.selected_style = {"width": "650px"};
@@ -84,24 +84,18 @@ angular.module('myApp', ['angularMoment', 'ngRoute'])
     $scope.updateState('/api/posts/', post._id);
   };
 
-    // Watch for location changes so we can apply state accordingly
-  $scope.$on('$locationChangeSuccess', function (a, newUrl, oldUrl) {
-    try {
-      var state_data = $location.state();
-      $scope.selected_style = state_data.selected_style;
-      $scope.replyto = state_data.replyto;
-      $scope.state_cookie = state_data.state_cookie;
-      document.cookie = 'state=' + state_data.state_cookie + '; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;';
-      window.scrollTo(0,0);
-    } catch(e) {}
-  });
-
-  $scope.padReply = function() {
-   try { return $('.post')[0].scrollHeight } catch(e) { return 170 }
-
-  };
-
   if ($scope.state_cookie.length === 24) $scope.select({'_id': $scope.state_cookie});
+
+
+  // Watch for location changes so we can apply state accordingly
+  $scope.$on('$locationChangeSuccess', function (a, newUrl, oldUrl) {
+    var state_data = $location.state();
+    $scope.selected_style = state_data.selected_style;
+    $scope.replyto = state_data.replyto;
+    $scope.state_cookie = state_data.state_cookie;
+    document.cookie = 'state=' + state_data.state_cookie + '; expires=Thu, 01 Jan 2222 00:00:01 GMT; path=/;';
+    window.scrollTo(0,0);
+  });
 
   $scope.notificationAmount = function () {
    var amount = 0;
@@ -136,52 +130,35 @@ angular.module('myApp', ['angularMoment', 'ngRoute'])
     document.cookie = 'login-cookie' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
     document.cookie = 'state' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
     window.location.href = "/";
+  };
+
+  $scope.stopPad = function() {
+    alert(1)
   }
 
-})
-.filter('reverse', function() {
+}).filter('reverse', function() {
   return function(items) {
     if (typeof items !== 'undefined') {
       return items.slice().reverse();
     }
   }
-})
-//   .directive('padReply', function($timeout) {
-//   return {
-//     restrict: 'A',
-//     link: function(scope, element, attr) {
-//       if (attr.ngShow){
-//         scope.$watch(attr.ngShow, function(ngShow){
-//           if(ngShow){
-//             $timeout(function(){
-//               element[0].style.paddingTop = document.getElementsByClassName('post')[0].scrollHeight + 'px';
-//               alert(document.getElementsByClassName('post')[0].scrollHeight);
-//
-//               alert(element[0].style.paddingTop);
-//
-//             }, 250);
-//           }
-//         })
-//       }
-//     }
-//   };
-// })
-.directive('autoFocus', function() {
+}).directive('autoFocus', function() {
   return {
     link: {
       post: function (scope, element, attr) { element[0].focus() }
     }
   }
- })
-//  .directive('padReply', function($timeout){
-//   return {
-//     link: {
-//       post: function (scope, element, attr) {
-//         if (!attr.postHeight) attr.postHeight = 0;
-//         $timeout(function(){
-//           try{document.getElementById('reply').style.paddingTop = +(element[0].scrollHeight || 170) + +attr.postHeight + 'px'}catch(e){}
-//         }, 250)
-//       }
-//     }
-//   }
-//  });
+ }).directive('loaded', function(){
+   return {
+     restrict: 'A',
+     link: function(scope, elem, attr) {
+       scope.$watch(function () {
+         try { return document.getElementById(attr.loaded).scrollHeight } catch(e) { return }
+       }, function (newVal) {
+         if (!newVal) return;
+         if (!scope.isPadable) return;
+         elem[0].style.paddingTop = newVal + 10 + 'px';
+       })
+     }
+   }
+});

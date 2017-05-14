@@ -88,8 +88,7 @@ body {
     height: 40px;
     width: 40px;
     border:solid 2px #b8babc;
-    position:absolute; left:640px; top:0px
-
+    position:absolute; left:95px; top:0px
 }
 .x-big b{
     position:absolute;
@@ -288,7 +287,7 @@ textarea {
     height:50px; transition: height 1.5s; border: 1px solid #EEEEEE;
     box-shadow: 1px 1px 0 #DDDDDD;
     display: inline-block;
-    margin: 2% auto;
+    margin-left: 15px;
     padding: 11px 20px 10px 3px;
     resize: none;
     border-radius: 10px;
@@ -329,9 +328,52 @@ z-index: 900; position: fixed; width: 100%; padding: 0px; background-color: #b8b
     clear:both;
 }
 .comment-container {
-    width:900px; margin:0 auto;margin-top:50px;margin-bottom:20px; text-align: center;
+    padding-top: 20px;
+    display: flex;              /* establish flex container */
+    flex-direction: row;     /* stack flex items vertically */
+    justify-content: center;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 100%;
+    margin:0 auto;margin-bottom:20px;
 }
 .comment-img {
     display: inline-block; border-radius: 50px; width:80px; height:80px
 }
 .inline { display: inline-block }
+
+@media screen and (max-width: 850px) {
+    #post .posting {
+        margin-right: 35px;
+    }
+    #post {
+        margin-right: 35px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+
+    #post .posting {
+        max-width: 85vw;
+        margin-right: 80px;
+        margin-left: 5px;
+    }
+    #post {
+        max-width: 85vw;
+        margin-right:80px;
+        margin-left: 0px;
+    }
+    #reply {
+        max-width: 80vw;
+    }
+    .comment-container {
+        width: 80vw;
+    }
+    .comment-container textarea {
+        width: 70vw
+    }
+    .x-big {
+        left:90px;
+    }
+
+}
+
